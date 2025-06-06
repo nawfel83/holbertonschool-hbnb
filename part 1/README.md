@@ -1,78 +1,78 @@
-# Documentation Technique HBnB
-## Architecture et Design du Système
+# HBnB Technical Documentation
+## System Architecture and Design
 
 ---
 
-## Table des Matières
+## Table of Contents
 
 1. [Introduction](#introduction)
-2. [Architecture Haut Niveau](#architecture-haut-niveau)
-3. [Couche de Logique Métier](#couche-de-logique-métier)
-4. [Flux d'Interaction API](#flux-dinteraction-api)
+2. [High-Level Architecture](#high-level-architecture)
+3. [Business Logic Layer](#business-logic-layer)
+4. [API Interaction Flow](#api-interaction-flow)
 5. [Conclusion](#conclusion)
 
 ---
 
 ## Introduction
 
-### Objectif du Document
+### Document Purpose
 
-Cette documentation technique présente l'architecture et le design complets du système HBnB (Holberton Airbnb Clone). Elle sert de référence détaillée pour guider les phases d'implémentation et fournit une vue d'ensemble claire de l'architecture du système.
+This technical documentation presents the complete architecture and design of the HBnB (Holberton Airbnb Clone) system. It serves as a detailed reference to guide implementation phases and provides a clear overview of the system architecture.
 
-### Vue d'Ensemble du Projet
+### Project Overview
 
-HBnB est une application de location de logements qui permet aux utilisateurs de :
-- Rechercher et réserver des hébergements
-- Publier leurs propres logements
-- Laisser et consulter des avis
-- Gérer leurs profils et réservations
+HBnB is a property rental application that allows users to:
+- Search and book accommodations
+- List their own properties
+- Leave and view reviews
+- Manage their profiles and bookings
 
-### Portée de la Documentation
+### Documentation Scope
 
-Cette documentation couvre :
-- L'architecture en couches du système
-- Les modèles de données et leurs relations
-- Les flux d'interaction entre les composants
-- Les patterns de conception utilisés
-
----
-
-## Architecture Haut Niveau
-
-### Pattern Architectural : Architecture en 3 Couches
-
-Le système HBnB adopte une architecture en couches qui sépare les responsabilités en trois niveaux distincts :
-
-1. **Couche de Présentation** : Gestion des interfaces utilisateur et APIs
-2. **Couche de Logique Métier** : Logique applicative et règles business
-3. **Couche de Persistance** : Gestion des données et accès base de données
-
-### Diagramme de Package Haut Niveau
-
-*[ESPACE RÉSERVÉ POUR LE DIAGRAMME DE PACKAGE DE LA TASK 0]*
-
-**Insérer ici le diagramme de package montrant :**
-- Les trois couches principales
-- Le pattern Facade pour la communication inter-couches
-- Les composants clés de chaque couche
-
-### Pattern Facade
-
-Le pattern Facade est utilisé pour :
-- Simplifier les interactions entre les couches
-- Fournir une interface unifiée
-- Réduire le couplage entre les composants
-- Faciliter la maintenance et l'évolution du système
+This documentation covers:
+- The system's layered architecture
+- Data models and their relationships
+- Component interaction flows
+- Design patterns used
 
 ---
 
-## Couche de Logique Métier
+## High-Level Architecture
 
-### Vue d'Ensemble
+### Architectural Pattern: 3-Layer Architecture
 
-La couche de logique métier contient les entités principales du domaine et leurs interactions. Elle implémente les règles business et orchestre les opérations sur les données.
+The HBnB system adopts a layered architecture that separates responsibilities into three distinct levels:
 
-### Diagramme de Classes Détaillé
+1. **Presentation Layer**: User interface and API management
+2. **Business Logic Layer**: Application logic and business rules
+3. **Persistence Layer**: Data management and database access
+
+### High-Level Package Diagram
+
+**[INSÉRER ICI LE DIAGRAMME DE PACKAGE DE LA TASK 0 - ARCHITECTURE EN COUCHES AVEC PATTERN FACADE]**
+
+**Insert here the package diagram showing:**
+- The three main layers
+- The Facade pattern for inter-layer communication
+- Key components of each layer
+
+### Facade Pattern
+
+The Facade pattern is used to:
+- Simplify interactions between layers
+- Provide a unified interface
+- Reduce coupling between components
+- Facilitate maintenance and system evolution
+
+---
+
+## Business Logic Layer
+
+### Overview
+
+The business logic layer contains the main domain entities and their interactions. It implements business rules and orchestrates data operations.
+
+### Detailed Class Diagram
 
 ```mermaid
 classDiagram
@@ -133,49 +133,49 @@ classDiagram
   Place "0..*" --> "0..*" Amenity : includes
 ```
 
-### Entités Principales
+### Main Entities
 
 #### BaseModel
-- **Responsabilité** : Classe abstraite fournissant les attributs et méthodes communs
-- **Attributs clés** : Identifiant unique, timestamps de création/modification
-- **Méthodes communes** : Sauvegarde et suppression d'entités
+- **Responsibility**: Abstract class providing common attributes and methods
+- **Key Attributes**: Unique identifier, creation/modification timestamps
+- **Common Methods**: Entity saving and deletion
 
 #### User
-- **Responsabilité** : Représente les utilisateurs du système
-- **Fonctionnalités** : Authentification, gestion de profil, droits d'administration
-- **Relations** : Possède des logements, crée des avis
+- **Responsibility**: Represents system users
+- **Features**: Authentication, profile management, administrative rights
+- **Relations**: Owns properties, creates reviews
 
 #### Place
-- **Responsabilité** : Représente les logements disponibles à la location
-- **Fonctionnalités** : Publication, recherche, gestion des informations
-- **Relations** : Appartient à un utilisateur, reçoit des avis, inclut des équipements
+- **Responsibility**: Represents properties available for rental
+- **Features**: Publishing, searching, information management
+- **Relations**: Belongs to a user, receives reviews, includes amenities
 
 #### Review
-- **Responsabilité** : Gère les avis et évaluations des logements
-- **Fonctionnalités** : Notation, modération, vérification
-- **Relations** : Liée à un utilisateur et un logement
+- **Responsibility**: Manages property reviews and ratings
+- **Features**: Rating, moderation, verification
+- **Relations**: Linked to a user and a property
 
 #### Amenity
-- **Responsabilité** : Représente les équipements et services des logements
-- **Fonctionnalités** : Catégorisation, activation/désactivation
-- **Relations** : Associée à plusieurs logements
+- **Responsibility**: Represents property amenities and services
+- **Features**: Categorization, activation/deactivation
+- **Relations**: Associated with multiple properties
 
-### Décisions de Design
+### Design Decisions
 
-- **Héritage** : Utilisation d'une classe BaseModel pour factoriser le code commun
-- **Relations** : Modélisation des associations métier entre entités
-- **Encapsulation** : Méthodes métier encapsulées dans chaque classe
-- **Extensibilité** : Structure permettant l'ajout facile de nouvelles entités
+- **Inheritance**: Use of BaseModel class to factorize common code
+- **Relations**: Modeling of business associations between entities
+- **Encapsulation**: Business methods encapsulated within each class
+- **Extensibility**: Structure allowing easy addition of new entities
 
 ---
 
-## Flux d'Interaction API
+## API Interaction Flow
 
-### Vue d'Ensemble
+### Overview
 
-Les diagrammes de séquence suivants illustrent les interactions entre les différentes couches lors des appels API principaux.
+The following sequence diagrams illustrate interactions between different layers during main API calls.
 
-### 1. Recherche de Logements
+### 1. Place Search
 
 ```mermaid
 sequenceDiagram
@@ -192,13 +192,13 @@ sequenceDiagram
     API-->>User: 200 OK + JSON list
 ```
 
-**Description du flux :**
-- L'utilisateur effectue une recherche avec des critères spécifiques
-- L'API valide et transmet la requête à la couche métier
-- La logique métier construit et exécute la requête de base de données
-- Les résultats sont filtrés et formatés avant d'être retournés
+**Flow Description:**
+- User performs a search with specific criteria
+- API validates and forwards the request to business layer
+- Business logic builds and executes database query
+- Results are filtered and formatted before being returned
 
-### 2. Création de Logement
+### 2. Place Creation
 
 ```mermaid
 sequenceDiagram
@@ -215,13 +215,13 @@ sequenceDiagram
     API-->>User: 201 Created / Error
 ```
 
-**Description du flux :**
-- L'utilisateur soumet les données d'un nouveau logement
-- Validation des données par la couche métier
-- Insertion en base de données si la validation réussit
-- Retour d'une confirmation ou d'une erreur à l'utilisateur
+**Flow Description:**
+- User submits new property data
+- Data validation by business layer
+- Database insertion if validation succeeds
+- Confirmation or error returned to user
 
-### 3. Création d'Avis
+### 3. Review Creation
 
 ```mermaid
 sequenceDiagram
@@ -238,13 +238,13 @@ sequenceDiagram
     API-->>User: 201 Created / Error
 ```
 
-**Description du flux :**
-- Soumission d'un avis pour un logement spécifique
-- Validation incluant la vérification des droits et de la cohérence
-- Enregistrement en base avec gestion des erreurs
-- Notification du résultat à l'utilisateur
+**Flow Description:**
+- Review submission for a specific property
+- Validation including rights verification and consistency
+- Database recording with error handling
+- Result notification to user
 
-### 4. Inscription Utilisateur
+### 4. User Registration
 
 ```mermaid
 sequenceDiagram
@@ -261,59 +261,58 @@ sequenceDiagram
     API-->>User: 201 Created / Error
 ```
 
-**Description du flux :**
-- Nouvelle inscription avec données personnelles
-- Validation complète incluant unicité de l'email
-- Hashage du mot de passe avant stockage
-- Création du compte avec gestion d'erreurs
+**Flow Description:**
+- New registration with personal data
+- Complete validation including email uniqueness
+- Password hashing before storage
+- Account creation with error handling
 
-### Patterns d'Interaction Communs
+### Common Interaction Patterns
 
-#### Gestion des Erreurs
-- Validation systématique des données d'entrée
-- Propagation structurée des erreurs entre couches
-- Codes de statut HTTP appropriés
+#### Error Management
+- Systematic input data validation
+- Structured error propagation between layers
+- Appropriate HTTP status codes
 
-#### Sécurité
-- Validation des autorisations à chaque niveau
-- Sanitisation des données utilisateur
-- Hashage sécurisé des mots de passe
+#### Security
+- Authorization validation at each level
+- User data sanitization
+- Secure password hashing
 
 #### Performance
-- Requêtes optimisées selon les besoins métier
-- Gestion efficace des transactions de base de données
-- Mise en cache des données fréquemment utilisées
+- Optimized queries according to business needs
+- Efficient database transaction management
+- Frequently used data caching
 
 ---
 
 ## Conclusion
 
-### Résumé de l'Architecture
+### Architecture Summary
 
-Cette documentation présente un système HBnB robuste basé sur :
-- Une architecture en couches claire et maintenable
-- Des modèles de données cohérents et extensibles
-- Des flux d'interaction optimisés et sécurisés
-- L'utilisation de patterns de conception éprouvés
+This documentation presents a robust HBnB system based on:
+- Clear and maintainable layered architecture
+- Coherent and extensible data models
+- Optimized and secure interaction flows
+- Use of proven design patterns
 
-### Avantages de cette Architecture
+### Architecture Benefits
 
-1. **Séparation des Responsabilités** : Chaque couche a un rôle bien défini
-2. **Maintenabilité** : Structure modulaire facilitant les modifications
-3. **Extensibilité** : Possibilité d'ajouter facilement de nouvelles fonctionnalités
-4. **Testabilité** : Isolation des composants pour les tests unitaires
-5. **Réutilisabilité** : Composants métier réutilisables
+1. **Separation of Concerns**: Each layer has a well-defined role
+2. **Maintainability**: Modular structure facilitating modifications
+3. **Extensibility**: Easy addition of new features
+4. **Testability**: Component isolation for unit testing
+5. **Reusability**: Reusable business components
 
-### Perspectives d'Évolution
+### Evolution Perspectives
 
-Cette architecture permet d'envisager facilement :
-- L'ajout de nouvelles entités métier
-- L'implémentation de nouvelles APIs
-- L'intégration de services externes
-- La mise en place de systèmes de cache
-- L'évolution vers une architecture microservices
+This architecture easily allows for:
+- Addition of new business entities
+- Implementation of new APIs
+- Integration of external services
+- Implementation of caching systems
+- Evolution towards microservices architecture
 
 ---
 
-*Document généré pour le projet HBnB - Holberton School*  
-*Version 1.0 - Juin 2025*
+AUTHORS: Nawfel | Warren | Yassine
