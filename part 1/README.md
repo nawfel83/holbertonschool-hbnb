@@ -49,8 +49,29 @@ The HBnB system adopts a layered architecture that separates responsibilities in
 
 ### High-Level Package Diagram
 
-**[INSÉRER ICI LE DIAGRAMME DE PACKAGE DE LA TASK 0 - ARCHITECTURE EN COUCHES AVEC PATTERN FACADE]**
-
+```mermaid
+graph TB
+    subgraph PL["Presentation Layer"]
+        API[API Services]
+        UI[User Interface]
+    end
+    subgraph BL["Business Logic Layer"]
+        Facade[Facade Pattern]
+        Models[Business Models]
+        Services[Business Services]
+    end
+    subgraph DL["Persistence Layer"]
+        Repo[Repositories]
+        DB[Database]
+    end
+    API --> Facade
+    UI --> Facade
+    Facade --> Models
+    Facade --> Services
+    Models --> Repo
+    Services --> Repo
+    Repo --> DB
+```
 **Insert here the package diagram showing:**
 - The three main layers
 - The Facade pattern for inter-layer communication
