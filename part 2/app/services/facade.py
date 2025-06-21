@@ -3,6 +3,8 @@ from app.persistence.repository import InMemoryRepository
 class HBnBFacade:
     def __init__(self):
         self.user_repo = InMemoryRepository()
+        self.amenity_repo = InMemoryRepository()  # <-- Ajouté
+
 
     def create_user(self, user_data):
         user = User(**user_data)
