@@ -34,7 +34,7 @@ class HBnBFacade:
         if not user:
             return None
 
-        # Mettre à jour les champs autorisés
+
         for field in ['first_name', 'last_name', 'email', 'password']:
             if field in data:
                 setattr(user, field, data[field])

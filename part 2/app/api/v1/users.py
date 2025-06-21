@@ -4,7 +4,7 @@ from app.services import facade
 
 api = Namespace('users', description='Opérations sur les utilisateurs')
 
-# Modèle d'entrée/sortie pour l'utilisateur (sans mot de passe en sortie)
+
 user_model = api.model('User', {
     'first_name': fields.String(required=True, description='Prénom de l\'utilisateur'),
     'last_name': fields.String(required=True, description='Nom de famille'),
@@ -12,7 +12,6 @@ user_model = api.model('User', {
     'password': fields.String(required=True, description='Mot de passe')  # Entrée seulement
 })
 
-# Modèle de sortie (sans le mot de passe)
 user_output_model = api.model('UserOut', {
     'id': fields.String(description='ID de l\'utilisateur'),
     'first_name': fields.String,
