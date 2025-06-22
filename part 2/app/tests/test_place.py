@@ -153,7 +153,7 @@ class TestPlaceFacade(unittest.TestCase):
         self.assertIsInstance(place, dict)  # Facade returns dict with details
         self.assertEqual(place['title'], 'Test Place')
         self.assertEqual(place['price'], 100.0)
-        self.assertEqual(place['owner_id'], self.user.id)
+        self.assertEqual(place['owner']['id'], self.user.id)
         self.assertIsNotNone(place['id'])
 
     def test_get_place_facade(self):
