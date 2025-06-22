@@ -9,7 +9,9 @@ import uuid
 class HBnBFacade:
     def __init__(self):
         self.user_repo = InMemoryRepository()
-        self.amenity_repo = InMemoryRepository()  # <-- Ajouté
+        self.amenity_repo = InMemoryRepository()
+        self.place_repo = InMemoryRepository()
+        self.review_repo = InMemoryRepository()
 
 
 
@@ -293,4 +295,4 @@ class HBnBFacade:
             amenity.name = data['name']
         self.amenity_repo.update(amenity_id, amenity)
         return vars(amenity)
->>>>>>> Dev-W
+
