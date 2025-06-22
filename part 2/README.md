@@ -1,9 +1,5 @@
 #  HBnB - Part 2: RESTful API with Flask
 
-![Python](https://img.shields.io/badge/Python-3.x-blue.svg)
-![Flask](https://img.shields.io/badge/Flask-RESTx-green.svg)
-![Status](https://img.shields.io/badge/status-active-brightgreen.svg)
-
 ## Table of Contents
 
 - [ Overview](#-overview)
