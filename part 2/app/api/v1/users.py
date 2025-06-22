@@ -5,17 +5,10 @@ from app.services import facade
 api = Namespace('users', description='Operations related to users')
 
 user_model = api.model('User', {
+    'id': fields.String(readOnly=True, description='User ID'),
     'first_name': fields.String(required=True, description='User\'s first name'),
     'last_name': fields.String(required=True, description='User\'s last name'),
     'email': fields.String(required=True, description='User\'s email address'),
-    'password': fields.String(required=True, description='User\'s password')
-})
-
-user_output_model = api.model('UserOut', {
-    'id': fields.String(description='User ID'),
-    'first_name': fields.String,
-    'last_name': fields.String,
-    'email': fields.String,
 })
 
 @api.route('/<string:user_id>')
@@ -32,7 +25,6 @@ class UserResource(Resource):
     @api.expect(user_model, validate=True)
     @api.response(200, 'User updated successfully')
     @api.response(404, 'User not found')
-    @api.marshal_with(user_output_model)
     def put(self, user_id):
         """Update user information"""
         user_data = request.json
@@ -44,7 +36,6 @@ class UserResource(Resource):
 @api.route('/')
 class UserList(Resource):
     @api.response(200, 'User list retrieved successfully')
-    @api.marshal_list_with(user_output_model)
     def get(self):
         """Retrieve the list of all users"""
         users = facade.get_all_users()
@@ -53,7 +44,6 @@ class UserList(Resource):
     @api.expect(user_model, validate=True)
     @api.response(201, 'User created successfully')
     @api.response(400, 'Invalid data')
-    @api.marshal_with(user_output_model)
     def post(self):
         """Create a new user"""
         user_data = request.json
