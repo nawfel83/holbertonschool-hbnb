@@ -8,27 +8,8 @@ This part of the HBnB project implements a RESTful API in Python using Flask and
 ## Project Structure
 
 ```
-part 2/
-│
-├── run.py
-└── app/
-    ├── __init__.py
-    ├── api/
-    │   └── v1/
-    │       ├── users.py
-    │       ├── places.py
-    │       ├── amenities.py
-    │       └── reviews.py
-    ├── models/
-    │   ├── user.py
-    │   ├── place.py
-    │   ├── amenity.py
-    │   └── review.py
-    ├── persistence/
-    │   └── repository.py
-    ├── services/
-    │   └── facade.py
-    └── tests/
+![image](https://github.com/user-attachments/assets/7bb3cc5b-7369-45d2-9777-7dc40ab00289)
+
 ```
 
 ## Features
