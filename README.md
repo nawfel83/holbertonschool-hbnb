@@ -1,4 +1,4 @@
-```md
+``
 # HBnB - Part 2: RESTful API with Flask 🚀
 
 ## Overview
@@ -7,10 +7,10 @@ This part of the HBnB project implements a RESTful API in Python using Flask and
 
 ## Project Structure
 
-```
+``
 ![image](https://github.com/user-attachments/assets/7bb3cc5b-7369-45d2-9777-7dc40ab00289)
 
-```
+``
 
 ## Features
 
@@ -22,12 +22,12 @@ This part of the HBnB project implements a RESTful API in Python using Flask and
 ## How to Run
 
 1. Install dependencies:
-   ```sh
+   ``sh
    pip install -r requirements.txt
    ```
 
 2. Start the Flask server:
-   ```sh
+   ``sh
    python run.py
    ```
 
