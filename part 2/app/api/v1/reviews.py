@@ -1,8 +1,8 @@
 from flask_restx import Namespace, Resource
 
-ns = Namespace('reviews', description='Review operations')
+api = Namespace('reviews', description='Review operations')
 
-@ns.route('/')
+@api.route('/')
 class ReviewList(Resource):
     def get(self):
         return {'message': 'List of reviews - placeholder'}
