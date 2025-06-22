@@ -4,39 +4,15 @@ from app.services.facade import HBnBFacade
 facade = HBnBFacade()
 api = Namespace('places', description='Places management')
 
-owner_model = api.model('Owner', {
-    'id': fields.String,
-    'first_name': fields.String,
-    'last_name': fields.String,
-    'email': fields.String
-})
-
-amenity_detail_model = api.model('AmenityDetail', {
-    'id': fields.String,
-    'name': fields.String
-})
-
 place_model = api.model('Place', {
-    'id': fields.String(readOnly=True),
-    'title': fields.String(required=True),
-    'description': fields.String(required=True),
-    'price': fields.Float(required=True),
-    'latitude': fields.Float(required=True),
-    'longitude': fields.Float(required=True),
-    'owner_id': fields.String(required=True),
-    'amenities': fields.List(fields.String),
-    'owner': fields.Nested(owner_model, readOnly=True),
-    'amenity_details': fields.List(fields.Nested(amenity_detail_model), readOnly=True)
-})
-
-place_creation_model = api.model('PlaceCreate', {
-    'title': fields.String(required=True),
-    'description': fields.String(required=True),
-    'price': fields.Float(required=True),
-    'latitude': fields.Float(required=True),
-    'longitude': fields.Float(required=True),
-    'owner_id': fields.String(required=True),
-    'amenities': fields.List(fields.String, required=False)
+    'id': fields.String(readOnly=True, description='Place ID'),
+    'title': fields.String(required=True, description='Title of the place'),
+    'description': fields.String(required=True, description='Description of the place'),
+    'price': fields.Float(required=True, description='Price per night'),
+    'latitude': fields.Float(required=True, description='Latitude'),
+    'longitude': fields.Float(required=True, description='Longitude'),
+    'owner_id': fields.String(required=True, description='Owner user ID'),
+    'amenities': fields.List(fields.String, description='List of amenity IDs'),
 })
 
 update_parser = reqparse.RequestParser()
@@ -54,7 +30,7 @@ class PlaceList(Resource):
         """Return all places"""
         return facade.get_all_places()
 
-    @api.expect(place_creation_model, validate=True)
+    @api.expect(place_model, validate=True)
     @api.marshal_with(place_model, code=201)
     def post(self):
         """Create a new place"""
