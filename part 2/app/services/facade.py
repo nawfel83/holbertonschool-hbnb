@@ -12,8 +12,7 @@ class HBnBFacade:
         self.amenity_repo = InMemoryRepository()  # <-- Ajouté
 
 
-<<<<<<< HEAD
-    # =============== USER METHODS ===============
+
     def create_user(self, data):
         """Create a new user with a unique ID"""
         user_id = str(uuid.uuid4())
@@ -42,7 +41,7 @@ class HBnBFacade:
         self.user_repo.update(user_id, data)
         return self.get_user(user_id)
 
-    # =============== AMENITY METHODS ===============
+
     def create_amenity(self, data):
         """Create a new amenity"""
         amenity_id = str(uuid.uuid4())
@@ -66,17 +65,17 @@ class HBnBFacade:
         self.amenity_repo.update(amenity_id, data)
         return self.get_amenity(amenity_id)
 
-    # =============== PLACE METHODS ===============
+
     def create_place(self, data):
         """Create a new place with validation"""
         place_id = str(uuid.uuid4())
         
-        # Check that the owner exists
+
         owner = self.get_user(data['owner_id'])
         if not owner:
             raise ValueError("Owner not found")
         
-        # Check that amenities exist
+
         amenity_objects = []
         if 'amenities' in data:
             for amenity_id in data['amenities']:
@@ -97,7 +96,7 @@ class HBnBFacade:
         )
         self.place_repo.add(place)
         
-        # Return with full details
+
         return self._get_place_with_details(place_id)
 
     def get_place(self, place_id):
@@ -115,7 +114,7 @@ class HBnBFacade:
         if not place:
             return None
         
-        # Validate amenities if present
+
         if 'amenities' in data:
             for amenity_id in data['amenities']:
                 amenity = self.get_amenity(amenity_id)
@@ -131,10 +130,10 @@ class HBnBFacade:
         if not place:
             return None
         
-        # Get owner details
+
         owner = self.get_user(place.owner_id)
         
-        # Get amenity details
+
         amenity_details = []
         for amenity_id in place.amenities:
             amenity = self.get_amenity(amenity_id)
@@ -160,7 +159,7 @@ class HBnBFacade:
             'amenities': amenity_details
         }
 
-    # =============== REVIEW METHODS ===============
+
     def create_review(self, data):
         """Create a new review with validation"""
         review_id = str(uuid.uuid4())
@@ -230,7 +229,7 @@ class HBnBFacade:
         # Remove the review from the repository
         self.review_repo.delete(review_id)
         return True
-=======
+
     def create_user(self, user_data):
         user = User(**user_data)
         self.user_repo.add(user)
