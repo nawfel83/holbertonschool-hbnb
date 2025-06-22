@@ -49,3 +49,16 @@ class UserList(Resource):
         """Obtenir la liste de tous les utilisateurs"""
         users = facade.get_all_users()
         return users, 200
+
+    @api.expect(user_model, validate=True)
+    @api.response(201, 'Utilisateur créé avec succès')
+    @api.response(400, 'Données invalides')
+    @api.marshal_with(user_output_model)
+    def post(self):
+        """Créer un nouvel utilisateur"""
+        user_data = request.json
+        try:
+            new_user = facade.create_user(user_data)
+            return new_user, 201
+        except ValueError as e:
+            return {'error': str(e)}, 400
