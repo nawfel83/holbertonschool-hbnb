@@ -1,5 +1,3 @@
-# app/api/v1/amenities.py
-
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
 
@@ -23,7 +21,6 @@ class AmenityList(Resource):
     def get(self):
         """Obtenir la liste de toutes les commodités"""
         return facade.get_all_amenities(), 200
-
 
 @api.route('/<string:amenity_id>')
 @api.param('amenity_id', 'ID de la commodité')

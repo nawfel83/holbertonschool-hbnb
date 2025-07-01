@@ -9,9 +9,13 @@ import uuid
 class HBnBFacade:
     def __init__(self):
         self.user_repo = InMemoryRepository()
-        self.amenity_repo = InMemoryRepository()  # <-- Ajouté
+        self.amenity_repo = InMemoryRepository()
+        self.place_repo = InMemoryRepository()
+        self.review_repo = InMemoryRepository()
 
 
+
+<<<<<<< HEAD
 <<<<<<< HEAD
     def create_user(self, user_data):
         user = User(**user_data)
@@ -78,6 +82,8 @@ class HBnBFacade:
         return vars(amenity)
 =======
     # =============== USER METHODS ===============
+=======
+>>>>>>> 17967596b14c8e26b568af7537ed4cdb0e1b8214
     def create_user(self, data):
         """Create a new user with a unique ID"""
         user_id = str(uuid.uuid4())
@@ -106,7 +112,7 @@ class HBnBFacade:
         self.user_repo.update(user_id, data)
         return self.get_user(user_id)
 
-    # =============== AMENITY METHODS ===============
+
     def create_amenity(self, data):
         """Create a new amenity"""
         amenity_id = str(uuid.uuid4())
@@ -130,17 +136,17 @@ class HBnBFacade:
         self.amenity_repo.update(amenity_id, data)
         return self.get_amenity(amenity_id)
 
-    # =============== PLACE METHODS ===============
+
     def create_place(self, data):
         """Create a new place with validation"""
         place_id = str(uuid.uuid4())
         
-        # Check that the owner exists
+
         owner = self.get_user(data['owner_id'])
         if not owner:
             raise ValueError("Owner not found")
         
-        # Check that amenities exist
+
         amenity_objects = []
         if 'amenities' in data:
             for amenity_id in data['amenities']:
@@ -161,7 +167,7 @@ class HBnBFacade:
         )
         self.place_repo.add(place)
         
-        # Return with full details
+
         return self._get_place_with_details(place_id)
 
     def get_place(self, place_id):
@@ -179,7 +185,7 @@ class HBnBFacade:
         if not place:
             return None
         
-        # Validate amenities if present
+
         if 'amenities' in data:
             for amenity_id in data['amenities']:
                 amenity = self.get_amenity(amenity_id)
@@ -195,10 +201,10 @@ class HBnBFacade:
         if not place:
             return None
         
-        # Get owner details
+
         owner = self.get_user(place.owner_id)
         
-        # Get amenity details
+
         amenity_details = []
         for amenity_id in place.amenities:
             amenity = self.get_amenity(amenity_id)
@@ -224,7 +230,7 @@ class HBnBFacade:
             'amenities': amenity_details
         }
 
-    # =============== REVIEW METHODS ===============
+
     def create_review(self, data):
         """Create a new review with validation"""
         review_id = str(uuid.uuid4())
@@ -294,4 +300,72 @@ class HBnBFacade:
         # Remove the review from the repository
         self.review_repo.delete(review_id)
         return True
+<<<<<<< HEAD
 >>>>>>> origin/main
+=======
+
+    def create_user(self, user_data):
+        user = User(**user_data)
+        self.user_repo.add(user)
+        return user
+
+    def get_user(self, user_id):
+        return self.user_repo.get(user_id)
+
+    def get_user_by_email(self, email):
+        return self.user_repo.get_by_attribute('email', email)
+
+    def get_all_users(self):
+        """Retourne tous les utilisateurs sans le mot de passe"""
+        users = self.user_repo.all()
+        return [
+            {
+                'id': u.id,
+                'first_name': u.first_name,
+                'last_name': u.last_name,
+                'email': u.email
+            }
+            for u in users
+        ]
+
+    def update_user(self, user_id, data):
+        """Met à jour un utilisateur"""
+        user = self.user_repo.get(user_id)
+        if not user:
+            return None
+
+
+        for field in ['first_name', 'last_name', 'email', 'password']:
+            if field in data:
+                setattr(user, field, data[field])
+
+        self.user_repo.update(user_id, user)
+
+        return {
+            'id': user.id,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'email': user.email
+        }
+    
+    def create_amenity(self, amenity_data):
+        amenity = Amenity(**amenity_data)
+        self.amenity_repo.add(amenity)
+        return amenity
+
+    def get_amenity(self, amenity_id):
+        return self.amenity_repo.get(amenity_id)
+
+    def get_all_amenities(self):
+        return [vars(a) for a in self.amenity_repo.all()]
+
+    def update_amenity(self, amenity_id, data):
+        amenity = self.amenity_repo.get(amenity_id)
+        if not amenity:
+            return None
+        if 'name' in data:
+            amenity.name = data['name']
+        self.amenity_repo.update(amenity_id, amenity)
+        return vars(amenity)
+
+>>>>>>> 17967596b14c8e26b568af7537ed4cdb0e1b8214
