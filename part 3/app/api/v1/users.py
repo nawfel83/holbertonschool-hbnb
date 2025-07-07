@@ -1,6 +1,7 @@
 from flask_restx import Namespace, Resource, fields
 from flask import request
 from app.services import facade
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 api = Namespace('users', description='Operations related to users')
 
@@ -9,10 +10,19 @@ user_model = api.model('User', {
     'first_name': fields.String(required=True, description='User\'s first name'),
     'last_name': fields.String(required=True, description='User\'s last name'),
     'email': fields.String(required=True, description='User\'s email address'),
+    'password': fields.String(required=True, description='User\'s password (write-only)')
+})
+
+user_response_model = api.model('UserResponse', {
+    'id': fields.String(readOnly=True, description='User ID'),
+    'first_name': fields.String(description='User\'s first name'),
+    'last_name': fields.String(description='User\'s last name'),
+    'email': fields.String(description='User\'s email address'),
 })
 
 @api.route('/<string:user_id>')
 class UserResource(Resource):
+    @api.marshal_with(user_response_model)
     @api.response(200, 'User details retrieved successfully')
     @api.response(404, 'User not found')
     def get(self, user_id):
@@ -20,28 +30,37 @@ class UserResource(Resource):
         user = facade.get_user(user_id)
         if not user:
             return {'error': 'User not found'}, 404
-        return {'id': user.id, 'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email}, 200
+        return vars(user), 200
 
     @api.expect(user_model, validate=True)
+    @api.marshal_with(user_response_model)
     @api.response(200, 'User updated successfully')
     @api.response(404, 'User not found')
+    @jwt_required()
     def put(self, user_id):
         """Update user information"""
+        current_user = get_jwt_identity()
+        if user_id != current_user['id']:
+            return {'error': 'Unauthorized action'}, 403
         user_data = request.json
+        if 'email' in user_data or 'password' in user_data:
+            return {'error': 'You cannot modify email or password'}, 400
         updated_user = facade.update_user(user_id, user_data)
         if not updated_user:
             return {'error': 'User not found'}, 404
-        return updated_user, 200
+        return vars(updated_user), 200
 
 @api.route('/')
 class UserList(Resource):
+    @api.marshal_list_with(user_response_model)
     @api.response(200, 'User list retrieved successfully')
     def get(self):
         """Retrieve the list of all users"""
         users = facade.get_all_users()
-        return users, 200
+        return [vars(user) for user in users], 200
 
     @api.expect(user_model, validate=True)
+    @api.marshal_with(user_response_model, code=201)
     @api.response(201, 'User created successfully')
     @api.response(400, 'Invalid data')
     def post(self):
@@ -49,6 +68,6 @@ class UserList(Resource):
         user_data = request.json
         try:
             new_user = facade.create_user(user_data)
-            return new_user, 201
+            return vars(new_user), 201
         except ValueError as e:
             return {'error': str(e)}, 400

@@ -27,10 +27,13 @@ class TestUser(unittest.TestCase):
         """Test user creation with valid data"""
         self.assertIsInstance(self.user, User)
         self.assertEqual(self.user.email, 'test@example.com')
-        self.assertEqual(self.user.password, 'testpassword123')
+        self.assertNotEqual(self.user.password, 'testpassword123')
+        self.assertTrue(self.user.password.startswith('$2'))
+        self.assertTrue(self.user.verify_password('testpassword123'))
         self.assertEqual(self.user.first_name, 'Test')
         self.assertEqual(self.user.last_name, 'User')
         self.assertIsNotNone(self.user.id)
+
 
     def test_user_update(self):
         """Test user update method"""
