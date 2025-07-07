@@ -20,7 +20,8 @@ class AmenityList(Resource):
     @api.response(200, 'Liste des commodités')
     def get(self):
         """Obtenir la liste de toutes les commodités"""
-        return facade.get_all_amenities(), 200
+        amenities = facade.get_all_amenities()
+        return [vars(amenity) for amenity in amenities], 200
 
 @api.route('/<string:amenity_id>')
 @api.param('amenity_id', 'ID de la commodité')
@@ -42,4 +43,4 @@ class AmenityResource(Resource):
         updated = facade.update_amenity(amenity_id, api.payload)
         if not updated:
             return {'error': 'Commodité non trouvée'}, 404
-        return updated, 200
+        return vars(updated), 200

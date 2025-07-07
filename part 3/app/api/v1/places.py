@@ -1,5 +1,6 @@
 from flask_restx import Namespace, Resource, fields, reqparse
 from app.services.facade import HBnBFacade
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 facade = HBnBFacade()
 api = Namespace('places', description='Places management')
@@ -28,13 +29,17 @@ class PlaceList(Resource):
     @api.marshal_list_with(place_model)
     def get(self):
         """Return all places"""
-        return facade.get_all_places()
+        places = facade.get_all_places()
+        return [vars(place) for place in places]
 
     @api.expect(place_model, validate=True)
     @api.marshal_with(place_model, code=201)
+    @jwt_required()
     def post(self):
         """Create a new place"""
         data = api.payload
+        current_user = get_jwt_identity()
+        data['owner_id'] = current_user['id']
         if data.get('price', 0) <= 0:
             api.abort(400, "Price must be positive")
         if not (-90 <= data.get('latitude', 0) <= 90):
@@ -44,7 +49,8 @@ class PlaceList(Resource):
         owner = facade.get_user(data['owner_id'])
         if not owner:
             api.abort(400, "The specified owner does not exist")
-        return facade.create_place(data), 201
+        place = facade.create_place(data)
+        return vars(place), 201
 
 @api.route('/<string:place_id>')
 @api.param('place_id', 'Place identifier')
@@ -55,12 +61,19 @@ class PlaceResource(Resource):
         place = facade.get_place(place_id)
         if not place:
             api.abort(404, "Place not found")
-        return place
+        return vars(place)
 
     @api.expect(update_parser)
     @api.marshal_with(place_model)
+    @jwt_required()
     def put(self, place_id):
         """Update an existing place"""
+        current_user = get_jwt_identity()
+        place = facade.get_place(place_id)
+        if not place:
+            api.abort(404, "Place not found")
+        if place.owner_id != current_user['id']:
+            api.abort(403, "Unauthorized action")
         data = update_parser.parse_args()
         clean_data = {k: v for k, v in data.items() if v is not None}
         if 'price' in clean_data and clean_data['price'] <= 0:
@@ -70,6 +83,4 @@ class PlaceResource(Resource):
         if 'longitude' in clean_data and not (-180 <= clean_data['longitude'] <= 180):
             api.abort(400, "Longitude must be between -180 and 180")
         place = facade.update_place(place_id, clean_data)
-        if not place:
-            api.abort(404, "Place not found")
-        return place
+        return vars(place)
