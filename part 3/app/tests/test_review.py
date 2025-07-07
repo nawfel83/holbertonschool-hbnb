@@ -151,7 +151,7 @@ class TestReviewFacade(unittest.TestCase):
             'text': 'Excellent place!',
             'rating': 5,
             'user_id': self.user.id,
-            'place_id': self.place['id']
+            'place_id': self.place.id
         }
 
     def test_create_review_facade(self):
@@ -162,7 +162,7 @@ class TestReviewFacade(unittest.TestCase):
         self.assertEqual(review.text, 'Excellent place!')
         self.assertEqual(review.rating, 5)
         self.assertEqual(review.user_id, self.user.id)
-        self.assertEqual(review.place_id, self.place['id'])
+        self.assertEqual(review.place_id, self.place.id)
         self.assertIsNotNone(review.id)
 
     def test_get_review_facade(self):
@@ -182,7 +182,7 @@ class TestReviewFacade(unittest.TestCase):
             'text': 'Good place',
             'rating': 4,
             'user_id': self.user.id,
-            'place_id': self.place['id']
+            'place_id': self.place.id
         }
         review2 = self.facade.create_review(review_data2)
         
@@ -216,11 +216,11 @@ class TestReviewFacade(unittest.TestCase):
             'text': 'Another review for same place',
             'rating': 3,
             'user_id': self.user.id,
-            'place_id': self.place['id']
+            'place_id': self.place.id
         }
         review2 = self.facade.create_review(review_data2)
         
-        place_reviews = self.facade.get_reviews_by_place(self.place['id'])
+        place_reviews = self.facade.get_reviews_by_place(self.place.id)
         
         self.assertGreaterEqual(len(place_reviews), 2)
         place_review_ids = [review.id for review in place_reviews]

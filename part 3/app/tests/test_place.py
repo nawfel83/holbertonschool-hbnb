@@ -150,19 +150,19 @@ class TestPlaceFacade(unittest.TestCase):
         """Test place creation through facade"""
         place = self.facade.create_place(self.place_data)
         
-        self.assertIsInstance(place, dict)  # Facade returns dict with details
-        self.assertEqual(place['title'], 'Test Place')
-        self.assertEqual(place['price'], 100.0)
-        self.assertEqual(place['owner']['id'], self.user.id)
-        self.assertIsNotNone(place['id'])
+        self.assertIsInstance(place, Place)
+        self.assertEqual(place.title, 'Test Place')
+        self.assertEqual(place.price, 100.0)
+        self.assertEqual(place.owner_id, self.user.id)
+        self.assertIsNotNone(place.id)
 
     def test_get_place_facade(self):
         """Test getting place by ID through facade"""
         created_place = self.facade.create_place(self.place_data)
-        retrieved_place = self.facade.get_place(created_place['id'])
+        retrieved_place = self.facade.get_place(created_place.id)
         
-        self.assertEqual(created_place['id'], retrieved_place['id'])
-        self.assertEqual(created_place['title'], retrieved_place['title'])
+        self.assertEqual(created_place.id, retrieved_place.id)
+        self.assertEqual(created_place.title, retrieved_place.title)
 
     def test_get_all_places_facade(self):
         """Test getting all places through facade"""
@@ -182,9 +182,9 @@ class TestPlaceFacade(unittest.TestCase):
         all_places = self.facade.get_all_places()
         
         self.assertGreaterEqual(len(all_places), 2)
-        place_ids = [place['id'] for place in all_places]
-        self.assertIn(place1['id'], place_ids)
-        self.assertIn(place2['id'], place_ids)
+        place_ids = [place.id for place in all_places]
+        self.assertIn(place1.id, place_ids)
+        self.assertIn(place2.id, place_ids)
 
     def test_update_place_facade(self):
         """Test updating place through facade"""
@@ -195,10 +195,10 @@ class TestPlaceFacade(unittest.TestCase):
             'price': 200.0
         }
         
-        updated_place = self.facade.update_place(created_place['id'], update_data)
+        updated_place = self.facade.update_place(created_place.id, update_data)
         
-        self.assertEqual(updated_place['title'], 'Updated Test Place')
-        self.assertEqual(updated_place['price'], 200.0)
+        self.assertEqual(updated_place.title, 'Updated Test Place')
+        self.assertEqual(updated_place.price, 200.0)
 
     def test_create_place_invalid_owner(self):
         """Test creating place with invalid owner"""
