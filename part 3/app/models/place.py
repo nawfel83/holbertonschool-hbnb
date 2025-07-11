@@ -1,17 +1,40 @@
-from app.models.review import Review
+from app import db
+from sqlalchemy import Column, String, Float, Text, ForeignKey, Table
+from sqlalchemy.orm import relationship
+import uuid
 
-# models/place.py - Updated Place model
-class Place:
-    def __init__(self, id, title, description, price, latitude, longitude, owner_id, amenities=None):
-        self.id = id
+# Table de liaison pour la relation many-to-many entre Place et Amenity
+place_amenity = Table('place_amenity', db.Model.metadata,
+    Column('place_id', String(36), ForeignKey('places.id'), primary_key=True),
+    Column('amenity_id', String(36), ForeignKey('amenities.id'), primary_key=True)
+)
+
+class Place(db.Model):
+    __tablename__ = 'places'
+    
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    title = Column(String(100), nullable=False)
+    description = Column(Text, nullable=True)
+    price = Column(Float, nullable=False)
+    latitude = Column(Float, nullable=False)
+    longitude = Column(Float, nullable=False)
+    owner_id = Column(String(36), ForeignKey('users.id'), nullable=False)
+    
+    # Relations
+    reviews = relationship('Review', backref='place', lazy=True, cascade='all, delete-orphan')
+    amenities = relationship('Amenity', secondary=place_amenity, back_populates='places')
+    
+    def __init__(self, title, description, price, latitude, longitude, owner_id, id=None):
+        if id:
+            self.id = id
+        else:
+            self.id = str(uuid.uuid4())
         self.title = title
         self.description = description
         self.price = self._validate_price(price)
         self.latitude = self._validate_latitude(latitude)
         self.longitude = self._validate_longitude(longitude)
         self.owner_id = owner_id
-        self.amenities = amenities or []
-        self.reviews = []  # List of reviews for this place
 
     def _validate_price(self, price):
         """Validate that the price is positive"""
