@@ -1,9 +1,10 @@
 from app import db
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
+from models.base_model import BaseModel
 import uuid
 
-class Amenity(db.Model):
+class Amenity(BaseModel, db.Model):
     __tablename__ = 'amenities'
     
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))

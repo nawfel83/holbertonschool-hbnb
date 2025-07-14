@@ -1,6 +1,7 @@
 from app import db
 from sqlalchemy import Column, String, Float, Text, ForeignKey, Table
 from sqlalchemy.orm import relationship
+from models.base_model import BaseModel
 import uuid
 
 # Table de liaison pour la relation many-to-many entre Place et Amenity
@@ -9,7 +10,7 @@ place_amenity = Table('place_amenity', db.Model.metadata,
     Column('amenity_id', String(36), ForeignKey('amenities.id'), primary_key=True)
 )
 
-class Place(db.Model):
+class Place(BaseModel, db.Model):
     __tablename__ = 'places'
     
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))

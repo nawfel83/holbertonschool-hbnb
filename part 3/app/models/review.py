@@ -1,8 +1,9 @@
 from app import db
 from sqlalchemy import Column, String, Integer, Text, ForeignKey
+from models.base_model import BaseModel
 import uuid
 
-class Review(db.Model):
+class Review(BaseModel, db.Model):
     __tablename__ = 'reviews'
     
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))

@@ -69,10 +69,11 @@ class PlaceResource(Resource):
     def put(self, place_id):
         """Update an existing place"""
         current_user = get_jwt_identity()
+         is_admin = current_user.get('is_admin', False)
         place = facade.get_place(place_id)
         if not place:
             api.abort(404, "Place not found")
-        if place.owner_id != current_user['id']:
+        if not is_admin and place.owner_id != current_user['id']:
             api.abort(403, "Unauthorized action")
         data = update_parser.parse_args()
         clean_data = {k: v for k, v in data.items() if v is not None}

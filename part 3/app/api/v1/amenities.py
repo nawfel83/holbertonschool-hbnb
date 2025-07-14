@@ -1,5 +1,7 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
+from flask_jwt_extended import jwt_required, get_jwt_identity
+
 
 api = Namespace('amenities', description='Endpoints pour les commodités')
 
@@ -13,6 +15,9 @@ class AmenityList(Resource):
     @api.response(201, 'Commodité créée')
     def post(self):
         """Créer une nouvelle commodité"""
+        current_user = get_jwt_identity()
+        if not current_user.get('is_admin', False):
+            return {'error': 'Admin privileges required'}, 403
         data = api.payload
         new_amenity = facade.create_amenity(data)
         return vars(new_amenity), 201
@@ -38,8 +43,13 @@ class AmenityResource(Resource):
     @api.expect(amenity_model, validate=True)
     @api.response(200, 'Commodité mise à jour')
     @api.response(404, 'Commodité non trouvée')
+    @api.expect(amenity_model, validate=True)
+    @jwt_required()
     def put(self, amenity_id):
         """Mettre à jour une commodité"""
+        current_user = get_jwt_identity()
+        if not current_user.get('is_admin', False):
+            return {'error': 'Admin privileges required'}, 403
         updated = facade.update_amenity(amenity_id, api.payload)
         if not updated:
             return {'error': 'Commodité non trouvée'}, 404

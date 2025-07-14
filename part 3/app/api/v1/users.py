@@ -40,16 +40,26 @@ class UserResource(Resource):
     def put(self, user_id):
         """Update user information"""
         current_user = get_jwt_identity()
+        is_admin = current_user.get('is_admin', False)
         if user_id != current_user['id']:
             return {'error': 'Unauthorized action'}, 403
         user_data = request.json
+        if is_admin:
         if 'email' in user_data or 'password' in user_data:
-            return {'error': 'You cannot modify email or password'}, 400
+            return {'error': 'Email already in use'}, 400
         updated_user = facade.update_user(user_id, user_data)
         if not updated_user:
             return {'error': 'User not found'}, 404
         return vars(updated_user), 200
 
+        if user_id != current_user['id']: 
+            return {'error': 'Unauthorized action'}, 403
+        if 'email' in user_data or 'password' in user_data: 
+            return {'error': 'You cannot modify email or password'}, 400
+        updated_user = facade.update_user(user_id, user_data)
+        if not updated_user:
+            return {'error': 'User not found'}, 404
+        return vars(updated_user), 200
 @api.route('/')
 class UserList(Resource):
     @api.marshal_list_with(user_response_model)
