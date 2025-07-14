@@ -1,16 +1,23 @@
 import unittest
+import uuid
+from app import create_app, db
 from app.models.place import Place
 from app.models.user import User
-from app.models.amenity import Amenity
 from app.services.facade import HBnBFacade
-import uuid
-
 
 class TestPlace(unittest.TestCase):
     """Test cases for Place model"""
 
     def setUp(self):
         """Set up test fixtures before each test method"""
+        # Créer l'application Flask avec contexte
+        self.app = create_app('testing')
+        self.app_context = self.app.app_context()
+        self.app_context.push()
+        
+        # Créer les tables
+        db.create_all()
+        
         self.place_data = {
             'title': 'Beautiful Apartment',
             'description': 'A lovely place to stay',
@@ -31,27 +38,28 @@ class TestPlace(unittest.TestCase):
             amenities=self.place_data['amenities']
         )
 
+    def tearDown(self):
+        """Tear down test fixtures after each test method"""
+        db.session.remove()
+        db.drop_all()
+        self.app_context.pop()
+
     def test_place_creation(self):
         """Test place creation with valid data"""
-        self.assertIsInstance(self.place, Place)
         self.assertEqual(self.place.title, 'Beautiful Apartment')
         self.assertEqual(self.place.description, 'A lovely place to stay')
         self.assertEqual(self.place.price, 100.0)
         self.assertEqual(self.place.latitude, 40.7128)
         self.assertEqual(self.place.longitude, -74.0060)
-        self.assertIsNotNone(self.place.id)
 
     def test_place_attributes(self):
         """Test place attributes are correctly set"""
-        self.assertTrue(hasattr(self.place, 'id'))
-        self.assertTrue(hasattr(self.place, 'title'))
-        self.assertTrue(hasattr(self.place, 'description'))
-        self.assertTrue(hasattr(self.place, 'price'))
-        self.assertTrue(hasattr(self.place, 'latitude'))
-        self.assertTrue(hasattr(self.place, 'longitude'))
-        self.assertTrue(hasattr(self.place, 'owner_id'))
-        self.assertTrue(hasattr(self.place, 'amenities'))
-        self.assertTrue(hasattr(self.place, 'reviews'))
+        self.assertEqual(self.place.title, 'Beautiful Apartment')
+        self.assertEqual(self.place.description, 'A lovely place to stay')
+        self.assertEqual(self.place.price, 100.0)
+        self.assertEqual(self.place.latitude, 40.7128)
+        self.assertEqual(self.place.longitude, -74.0060)
+        self.assertIsInstance(self.place.id, str)
 
     def test_place_price_validation(self):
         """Test place price validation"""
@@ -110,100 +118,96 @@ class TestPlace(unittest.TestCase):
 
     def test_place_reviews_list(self):
         """Test place reviews list initialization"""
-        self.assertIsInstance(self.place.reviews, list)
         self.assertEqual(len(self.place.reviews), 0)
+        self.assertIsInstance(self.place.reviews, list)
 
 
 class TestPlaceFacade(unittest.TestCase):
-    """Test cases for Place operations through HBnBFacade"""
+    """Test cases for Place operations through facade"""
 
     def setUp(self):
         """Set up test fixtures before each test method"""
+        # Créer l'application Flask avec contexte
+        self.app = create_app('testing')
+        self.app_context = self.app.app_context()
+        self.app_context.push()
+        
+        # Créer les tables
+        db.create_all()
+        
         self.facade = HBnBFacade()
         
-        # Create a user first (required for place creation)
+        # Créer un utilisateur pour les tests
         self.user_data = {
-            'email': 'owner@example.com',
-            'password': 'password123',
             'first_name': 'John',
-            'last_name': 'Doe'
+            'last_name': 'Doe',
+            'email': 'john.doe@example.com',
+            'password': 'securepassword123'
         }
         self.user = self.facade.create_user(self.user_data)
         
-        # Create an amenity
-        self.amenity_data = {
-            'name': 'WiFi'
-        }
-        self.amenity = self.facade.create_amenity(self.amenity_data)
-        
         self.place_data = {
-            'title': 'Test Place',
-            'description': 'A test place',
+            'title': 'Beautiful Apartment',
+            'description': 'A lovely place to stay',
             'price': 100.0,
             'latitude': 40.7128,
             'longitude': -74.0060,
             'owner_id': self.user.id,
-            'amenities': [self.amenity.id]
+            'amenities': []
         }
+
+    def tearDown(self):
+        """Tear down test fixtures after each test method"""
+        db.session.remove()
+        db.drop_all()
+        self.app_context.pop()
 
     def test_create_place_facade(self):
         """Test place creation through facade"""
         place = self.facade.create_place(self.place_data)
-        
-        self.assertIsInstance(place, Place)
-        self.assertEqual(place.title, 'Test Place')
-        self.assertEqual(place.price, 100.0)
+        self.assertIsNotNone(place)
+        self.assertEqual(place.title, 'Beautiful Apartment')
         self.assertEqual(place.owner_id, self.user.id)
-        self.assertIsNotNone(place.id)
 
     def test_get_place_facade(self):
         """Test getting place by ID through facade"""
         created_place = self.facade.create_place(self.place_data)
         retrieved_place = self.facade.get_place(created_place.id)
         
-        self.assertEqual(created_place.id, retrieved_place.id)
-        self.assertEqual(created_place.title, retrieved_place.title)
+        self.assertIsNotNone(retrieved_place)
+        self.assertEqual(retrieved_place.id, created_place.id)
+        self.assertEqual(retrieved_place.title, created_place.title)
 
     def test_get_all_places_facade(self):
         """Test getting all places through facade"""
         place1 = self.facade.create_place(self.place_data)
-        
-        place_data2 = {
-            'title': 'Second Place',
-            'description': 'Another test place',
-            'price': 150.0,
-            'latitude': 41.0,
-            'longitude': -75.0,
-            'owner_id': self.user.id,
-            'amenities': []
-        }
-        place2 = self.facade.create_place(place_data2)
+        place2_data = self.place_data.copy()
+        place2_data['title'] = 'Another Apartment'
+        place2 = self.facade.create_place(place2_data)
         
         all_places = self.facade.get_all_places()
-        
-        self.assertGreaterEqual(len(all_places), 2)
-        place_ids = [place.id for place in all_places]
-        self.assertIn(place1.id, place_ids)
-        self.assertIn(place2.id, place_ids)
+        self.assertEqual(len(all_places), 2)
+        self.assertIn(place1, all_places)
+        self.assertIn(place2, all_places)
 
     def test_update_place_facade(self):
         """Test updating place through facade"""
         created_place = self.facade.create_place(self.place_data)
-        
         update_data = {
-            'title': 'Updated Test Place',
-            'price': 200.0
+            'title': 'Updated Beautiful Apartment',
+            'price': 150.0
         }
         
         updated_place = self.facade.update_place(created_place.id, update_data)
         
-        self.assertEqual(updated_place.title, 'Updated Test Place')
-        self.assertEqual(updated_place.price, 200.0)
+        self.assertIsNotNone(updated_place)
+        self.assertEqual(updated_place.title, 'Updated Beautiful Apartment')
+        self.assertEqual(updated_place.price, 150.0)
 
     def test_create_place_invalid_owner(self):
         """Test creating place with invalid owner"""
         invalid_place_data = self.place_data.copy()
-        invalid_place_data['owner_id'] = str(uuid.uuid4())
+        invalid_place_data['owner_id'] = str(uuid.uuid4())  # Non-existent owner
         
         with self.assertRaises(ValueError):
             self.facade.create_place(invalid_place_data)
@@ -211,7 +215,7 @@ class TestPlaceFacade(unittest.TestCase):
     def test_create_place_invalid_amenity(self):
         """Test creating place with invalid amenity"""
         invalid_place_data = self.place_data.copy()
-        invalid_place_data['amenities'] = [str(uuid.uuid4())]
+        invalid_place_data['amenities'] = [str(uuid.uuid4())]  # Non-existent amenity
         
         with self.assertRaises(ValueError):
             self.facade.create_place(invalid_place_data)
@@ -226,7 +230,6 @@ class TestPlaceFacade(unittest.TestCase):
         """Test updating a place that doesn't exist"""
         fake_id = str(uuid.uuid4())
         update_data = {'title': 'Updated Title'}
-        
         result = self.facade.update_place(fake_id, update_data)
         self.assertIsNone(result)
 

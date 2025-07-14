@@ -35,16 +35,33 @@ class HBnBFacade:
         return self.user_repo.get_by_attribute('email', email)
 
     # PLACE METHODS
-    def create_place(self, data):
+    def create_place(self, place_data):
+        """Créer un nouveau lieu"""
+
+
+        # Valider que le propriétaire existe
+        owner = self.user_repo.get(place_data['owner_id'])
+        if not owner:
+            raise ValueError("Owner not found")
+
+        # Valider que toutes les amenities existent
+        if 'amenities' in place_data and place_data['amenities']:
+            for amenity_id in place_data['amenities']:
+                amenity = self.amenity_repo.get(amenity_id)
+                if not amenity:
+                    raise ValueError(f"Amenity {amenity_id} not found")
+
+        # Le reste du code existant...
         place = Place(
-            title=data['title'],
-            description=data['description'],
-            price=data['price'],
-            latitude=data['latitude'],
-            longitude=data['longitude'],
-            owner_id=data['owner_id'],
-            amenities=data.get('amenities', [])
+            title=place_data['title'],
+            description=place_data['description'],
+            price=place_data['price'],
+            latitude=place_data['latitude'],
+            longitude=place_data['longitude'],
+            owner_id=place_data['owner_id'],
+            amenities=place_data.get('amenities', [])
         )
+
         return self.place_repo.add(place)
 
     def get_place(self, place_id):
@@ -94,3 +111,15 @@ class HBnBFacade:
 
     def update_amenity(self, amenity_id, data):
         return self.amenity_repo.update(amenity_id, data)
+
+    def delete_amenity(self, amenity_id):
+        """Supprimer une amenity par son ID"""
+        try:
+            amenity = self.amenity_repo.get(amenity_id)
+            if not amenity:
+                return False
+        
+            self.amenity_repo.delete(amenity_id)
+            return True
+        except Exception:
+            return False

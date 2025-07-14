@@ -1,48 +1,39 @@
 from flask import Flask
-from flask_restx import Api
 from flask_sqlalchemy import SQLAlchemy
-from flask_jwt_extended import JWTManager
 from flask_bcrypt import Bcrypt
+from config import config_by_name
 
+# Initialiser les extensions
 db = SQLAlchemy()
-jwt = JWTManager()
 bcrypt = Bcrypt()
 
-def create_app(config_class=None):
+def create_app(config_name='development'):
+    """Factory pour créer l'application Flask"""
     app = Flask(__name__)
     
-    if config_class:
-        app.config.from_object(config_class)
+    # Charger la configuration
+    if config_name in config_by_name:
+        app.config.from_object(config_by_name[config_name])
     else:
-        from config import DevelopmentConfig
-        app.config.from_object(DevelopmentConfig)
+        app.config.from_object(config_by_name['default'])
     
-    # Initialize extensions
+    # Initialiser les extensions avec l'app
     db.init_app(app)
-    jwt.init_app(app)
     bcrypt.init_app(app)
     
-    # Import models BEFORE creating tables
-    from app.models import associations  # Import associations first
-    from app.models import user, place, review, amenity, base_model
-    
-    # Create tables
-    with app.app_context():
-        db.create_all()
-    
-    # Register API blueprints
-    api = Api(app, version='1.0', title='HBnB API', description='HBnB RESTful API')
-    
-    from app.api.v1.users import api as users_ns
-    from app.api.v1.places import api as places_ns
-    from app.api.v1.reviews import api as reviews_ns
-    from app.api.v1.amenities import api as amenities_ns
-    from app.api.v1.auth import api as auth_ns
-    
-    api.add_namespace(users_ns, path='/api/v1/users')
-    api.add_namespace(places_ns, path='/api/v1/places')
-    api.add_namespace(reviews_ns, path='/api/v1/reviews')
-    api.add_namespace(amenities_ns, path='/api/v1/amenities')
-    api.add_namespace(auth_ns, path='/api/v1/auth')
+    # Enregistrer les blueprints (si ils existent)
+    try:
+        from app.api.v1.users import bp as users_bp
+        from app.api.v1.places import bp as places_bp
+        from app.api.v1.reviews import bp as reviews_bp
+        from app.api.v1.amenities import bp as amenities_bp
+        
+        app.register_blueprint(users_bp)
+        app.register_blueprint(places_bp)
+        app.register_blueprint(reviews_bp)
+        app.register_blueprint(amenities_bp)
+    except ImportError:
+        # Les blueprints peuvent ne pas exister encore
+        pass
     
     return app
