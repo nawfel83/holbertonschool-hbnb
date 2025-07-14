@@ -2,6 +2,7 @@ from flask_restx import Namespace, Resource, fields
 from flask import request
 from app.services import facade
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from app.services.auth import admin_required
 
 api = Namespace('users', description='Operations related to users')
 
@@ -40,26 +41,25 @@ class UserResource(Resource):
     def put(self, user_id):
         """Update user information"""
         current_user = get_jwt_identity()
-        is_admin = current_user.get('is_admin', False)
+        user_data = request.json
+        
+        if current_user.get('is_admin', False):
+            updated_user = facade.update_user(user_id, user_data)
+            if not updated_user:
+                return {'error': 'User not found'}, 404
+            return vars(updated_user), 200
+        
         if user_id != current_user['id']:
             return {'error': 'Unauthorized action'}, 403
-        user_data = request.json
-        if is_admin:
+        
         if 'email' in user_data or 'password' in user_data:
-            return {'error': 'Email already in use'}, 400
+            return {'error': 'You cannot modify email or password'}, 400
+            
         updated_user = facade.update_user(user_id, user_data)
         if not updated_user:
             return {'error': 'User not found'}, 404
         return vars(updated_user), 200
 
-        if user_id != current_user['id']: 
-            return {'error': 'Unauthorized action'}, 403
-        if 'email' in user_data or 'password' in user_data: 
-            return {'error': 'You cannot modify email or password'}, 400
-        updated_user = facade.update_user(user_id, user_data)
-        if not updated_user:
-            return {'error': 'User not found'}, 404
-        return vars(updated_user), 200
 @api.route('/')
 class UserList(Resource):
     @api.marshal_list_with(user_response_model)
@@ -73,8 +73,10 @@ class UserList(Resource):
     @api.marshal_with(user_response_model, code=201)
     @api.response(201, 'User created successfully')
     @api.response(400, 'Invalid data')
+    @jwt_required()
+    @admin_required
     def post(self):
-        """Create a new user"""
+        """Create a new user (Admin only)"""
         user_data = request.json
         try:
             new_user = facade.create_user(user_data)

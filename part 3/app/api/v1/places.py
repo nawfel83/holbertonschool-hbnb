@@ -69,7 +69,7 @@ class PlaceResource(Resource):
     def put(self, place_id):
         """Update an existing place"""
         current_user = get_jwt_identity()
-         is_admin = current_user.get('is_admin', False)
+        is_admin = current_user.get('is_admin', False)
         place = facade.get_place(place_id)
         if not place:
             api.abort(404, "Place not found")
