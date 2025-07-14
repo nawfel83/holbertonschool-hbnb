@@ -1,14 +1,9 @@
 from app import db
-from sqlalchemy import Column, String, Float, Text, ForeignKey, Table
+from sqlalchemy import Column, String, Float, Text, ForeignKey
 from sqlalchemy.orm import relationship
 from app.models.base_model import BaseModel
+from app.models.associations import place_amenity
 import uuid
-
-# Table de liaison pour la relation many-to-many entre Place et Amenity
-place_amenity = Table('place_amenity', db.Model.metadata,
-    Column('place_id', String(36), ForeignKey('places.id'), primary_key=True),
-    Column('amenity_id', String(36), ForeignKey('amenities.id'), primary_key=True)
-)
 
 class Place(BaseModel, db.Model):
     __tablename__ = 'places'
@@ -22,7 +17,7 @@ class Place(BaseModel, db.Model):
     
     # Relations
     reviews = relationship('Review', backref='place', lazy=True, cascade='all, delete-orphan')
-    amenities = relationship('Amenity', secondary=place_amenity, back_populates='places')
+    amenities = relationship('Amenity', secondary=place_amenity, back_populates='places', lazy='dynamic')
     
     def __init__(self, title, description, price, latitude, longitude, owner_id, id=None, amenities=None):
         if id:
@@ -36,9 +31,9 @@ class Place(BaseModel, db.Model):
         self.longitude = self._validate_longitude(longitude)
         self.owner_id = owner_id
         
-        # Gestion des amenities
+        # Gestion des amenities (sera géré après création)
         if amenities is not None:
-            self.amenities = amenities if isinstance(amenities, list) else []
+            self._pending_amenities = amenities
 
     def _validate_price(self, price):
         """Validate that the price is positive"""
@@ -67,15 +62,10 @@ class Place(BaseModel, db.Model):
                 value = self._validate_latitude(value)
             elif key == 'longitude':
                 value = self._validate_longitude(value)
+            elif key == 'amenities':
+                # Handle amenities separately
+                continue
             setattr(self, key, value)
-
-    def add_review(self, review):
-        """Add a review to this place"""
-        self.reviews.append(review)
-
-    def remove_review(self, review_id):
-        """Remove a review from this place"""
-        self.reviews = [r for r in self.reviews if r.id != review_id]
 
     def add_amenity(self, amenity):
         """Add an amenity to this place"""

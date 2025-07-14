@@ -22,7 +22,8 @@ def create_app(config_class=None):
     jwt.init_app(app)
     bcrypt.init_app(app)
     
-    # Import models AFTER db initialization to ensure they're registered
+    # Import models BEFORE creating tables
+    from app.models import associations  # Import associations first
     from app.models import user, place, review, amenity, base_model
     
     # Create tables

@@ -1,22 +1,22 @@
-from app import bcrypt, db
-from sqlalchemy import Column, String
-from sqlalchemy.orm import relationship
+from app import db, bcrypt
 from app.models.base_model import BaseModel
+from sqlalchemy.orm import validates, relationship
+import re
 import uuid
 
-class User(BaseModel):
+class User(BaseModel, db.Model):
     __tablename__ = 'users'
-    
+
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(120), nullable=False, unique=True)
     password = db.Column(db.String(128), nullable=False)
-    is_admin = db.Column(db.Boolean, default=False)
+    is_admin = db.Column(db.Boolean, default=False, nullable=False)
 
     # Relations
-    places = relationship('Place', backref='owner', lazy=True)
-    reviews = relationship('Review', backref='user', lazy=True)
-    
+    places = relationship('Place', backref='owner', lazy=True, cascade='all, delete-orphan')
+    reviews = relationship('Review', backref='user', lazy=True, cascade='all, delete-orphan')
+
     def __init__(self, email, password, first_name, last_name, id=None, is_admin=False):
         if id:
             self.id = id
@@ -39,6 +39,5 @@ class User(BaseModel):
 
     def update(self, data):
         for key, value in data.items():
-            # Never allow direct password update here
             if key not in ['password']:
                 setattr(self, key, value)

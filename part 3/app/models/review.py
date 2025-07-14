@@ -22,11 +22,13 @@ class Review(BaseModel, db.Model):
         self.place_id = place_id
 
     def _validate_rating(self, rating):
-        if not 1 <= rating <= 5:
-            raise ValueError("Rating must be between 1 and 5")
+        """Validate that rating is between 1 and 5"""
+        if not isinstance(rating, int) or not 1 <= rating <= 5:
+            raise ValueError("Rating must be an integer between 1 and 5")
         return rating
 
     def update(self, data):
+        """Update the attributes of the review"""
         for key, value in data.items():
             if key == 'rating':
                 value = self._validate_rating(value)
