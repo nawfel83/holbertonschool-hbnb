@@ -12,8 +12,7 @@ place_amenity = Table('place_amenity', db.Model.metadata,
 
 class Place(BaseModel, db.Model):
     __tablename__ = 'places'
-    
-    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+
     title = Column(String(100), nullable=False)
     description = Column(Text, nullable=True)
     price = Column(Float, nullable=False)

@@ -5,8 +5,7 @@ import uuid
 
 class Review(BaseModel, db.Model):
     __tablename__ = 'reviews'
-    
-    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+
     text = Column(Text, nullable=False)
     rating = Column(Integer, nullable=False)
     user_id = Column(String(36), ForeignKey('users.id'), nullable=False)

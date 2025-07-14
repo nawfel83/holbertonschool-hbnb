@@ -6,8 +6,7 @@ import uuid
 
 class Amenity(BaseModel, db.Model):
     __tablename__ = 'amenities'
-    
-    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+
     name = Column(String(50), unique=True, nullable=False)
     
     # Relation many-to-many avec Place
@@ -18,8 +17,18 @@ class Amenity(BaseModel, db.Model):
             self.id = id
         else:
             self.id = str(uuid.uuid4())
-        self.name = name
+        self.name = self._validate_name(name)
+
+    def _validate_name(self, name):  # ← AJOUTER cette méthode
+        """Validate amenity name"""
+        if not name or not name.strip():
+            raise ValueError("Amenity name cannot be empty")
+        if len(name.strip()) > 50:
+            raise ValueError("Amenity name cannot be longer than 50 characters")
+        return name.strip()
 
     def update(self, data):
         for key, value in data.items():
+            if key == 'name':  # ← AJOUTER validation dans update
+                value = self._validate_name(value)
             setattr(self, key, value)
