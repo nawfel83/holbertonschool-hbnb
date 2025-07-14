@@ -22,8 +22,12 @@ def create_app(config_class=None):
     jwt.init_app(app)
     bcrypt.init_app(app)
     
-    # Import models to ensure they're registered
-    from app.models import user, place, review, amenity
+    # Import models AFTER db initialization to ensure they're registered
+    from app.models import user, place, review, amenity, base_model
+    
+    # Create tables
+    with app.app_context():
+        db.create_all()
     
     # Register API blueprints
     api = Api(app, version='1.0', title='HBnB API', description='HBnB RESTful API')

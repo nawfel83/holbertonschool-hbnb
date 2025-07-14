@@ -1,6 +1,6 @@
 from app import db
 from sqlalchemy import Column, String, Integer, Text, ForeignKey
-from models.base_model import BaseModel
+from app.models.base_model import BaseModel
 import uuid
 
 class Review(BaseModel, db.Model):

@@ -1,7 +1,7 @@
 from app import bcrypt, db
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
-from .base_model import BaseModel
+from app.models.base_model import BaseModel
 import uuid
 
 class User(BaseModel):
@@ -17,7 +17,7 @@ class User(BaseModel):
     places = relationship('Place', backref='owner', lazy=True)
     reviews = relationship('Review', backref='user', lazy=True)
     
-    def __init__(self, email, password, first_name, last_name, id=None):
+    def __init__(self, email, password, first_name, last_name, id=None, is_admin=False):
         if id:
             self.id = id
         else:
@@ -27,6 +27,7 @@ class User(BaseModel):
         self.hash_password(password)
         self.first_name = first_name
         self.last_name = last_name
+        self.is_admin = is_admin
 
     def hash_password(self, password):
         """Hashes the password before storing it."""

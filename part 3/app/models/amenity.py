@@ -1,7 +1,7 @@
 from app import db
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
-from models.base_model import BaseModel
+from app.models.base_model import BaseModel
 import uuid
 
 class Amenity(BaseModel, db.Model):

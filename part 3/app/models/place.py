@@ -1,7 +1,7 @@
 from app import db
 from sqlalchemy import Column, String, Float, Text, ForeignKey, Table
 from sqlalchemy.orm import relationship
-from models.base_model import BaseModel
+from app.models.base_model import BaseModel
 import uuid
 
 # Table de liaison pour la relation many-to-many entre Place et Amenity
@@ -37,6 +37,7 @@ class Place(BaseModel, db.Model):
         self.longitude = self._validate_longitude(longitude)
         self.owner_id = owner_id
         
+        # Gestion des amenities
         if amenities is not None:
             self.amenities = amenities if isinstance(amenities, list) else []
 
