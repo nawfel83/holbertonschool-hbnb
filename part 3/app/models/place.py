@@ -25,7 +25,7 @@ class Place(BaseModel, db.Model):
     reviews = relationship('Review', backref='place', lazy=True, cascade='all, delete-orphan')
     amenities = relationship('Amenity', secondary=place_amenity, back_populates='places')
     
-    def __init__(self, title, description, price, latitude, longitude, owner_id, id=None):
+    def __init__(self, title, description, price, latitude, longitude, owner_id, id=None, amenities=None):
         if id:
             self.id = id
         else:
@@ -36,6 +36,9 @@ class Place(BaseModel, db.Model):
         self.latitude = self._validate_latitude(latitude)
         self.longitude = self._validate_longitude(longitude)
         self.owner_id = owner_id
+        
+        if amenities is not None:
+            self.amenities = amenities if isinstance(amenities, list) else []
 
     def _validate_price(self, price):
         """Validate that the price is positive"""
@@ -73,3 +76,13 @@ class Place(BaseModel, db.Model):
     def remove_review(self, review_id):
         """Remove a review from this place"""
         self.reviews = [r for r in self.reviews if r.id != review_id]
+
+    def add_amenity(self, amenity):
+        """Add an amenity to this place"""
+        if amenity not in self.amenities:
+            self.amenities.append(amenity)
+
+    def remove_amenity(self, amenity):
+        """Remove an amenity from this place"""
+        if amenity in self.amenities:
+            self.amenities.remove(amenity)
