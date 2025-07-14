@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
+from flask_restx import Api
 from config import config_by_name
 
 # Initialiser les extensions
@@ -21,19 +22,22 @@ def create_app(config_name='development'):
     db.init_app(app)
     bcrypt.init_app(app)
     
-    # Enregistrer les blueprints (si ils existent)
+    # Initialiser Flask-RESTX
+    api = Api(app, doc='/docs/', title='HBnB API', version='1.0', description='HBnB API Documentation')
+    
+    
+    # Enregistrer les namespaces RESTX
     try:
-        from app.api.v1.users import bp as users_bp
-        from app.api.v1.places import bp as places_bp
-        from app.api.v1.reviews import bp as reviews_bp
-        from app.api.v1.amenities import bp as amenities_bp
+        from app.api.v1.users import api as users_ns
+        from app.api.v1.places import api as places_ns
+        from app.api.v1.reviews import api as reviews_ns
+        from app.api.v1.amenities import api as amenities_ns
         
-        app.register_blueprint(users_bp)
-        app.register_blueprint(places_bp)
-        app.register_blueprint(reviews_bp)
-        app.register_blueprint(amenities_bp)
-    except ImportError:
-        # Les blueprints peuvent ne pas exister encore
-        pass
+        api.add_namespace(users_ns, path='/api/v1/users')
+        api.add_namespace(places_ns, path='/api/v1/places')
+        api.add_namespace(reviews_ns, path='/api/v1/reviews')
+        api.add_namespace(amenities_ns, path='/api/v1/amenities')
+    except ImportError as e:
+        print(f"Warning: Could not import API namespaces: {e}")
     
     return app
