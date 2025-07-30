@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HBnB - Détails du Lieu</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
+</head>
+<body>
+    <header>
+        <img src="assets/logo.svg" alt="HBnB Logo" class="logo">
+        <div>
+            <a href="login.html" id="login-link" class="login-button" style="display: none;">Connexion</a>
+            <button id="logout-button" class="login-button" style="display: none;">Déconnexion</button>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="index.html">Accueil</a></li>
+            <li><a href="login.html">Connexion</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section id="place-details" class="place-details">
+            <div class="place-info">
+                <!-- Les détails du lieu seront chargés ici -->
+            </div>
+        </section>
+
+        <section id="reviews-section">
+            <h3>Avis des clients</h3>
+            <div id="reviews-list">
+                <!-- Les avis seront chargés ici -->
+            </div>
+        </section>
+
+        <section id="add-review" class="add-review" style="display: none;">
+            <h3>Ajouter un avis</h3>
+            <a href="add_review.html" id="add-review-link" class="details-button">Ajouter un avis</a>
+        </section>
+
+        <div id="loading" style="text-align: center; padding: 2rem;">
+            <p>Chargement des détails...</p>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 HBnB. Tous droits réservés.</p>
+    </footer>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
