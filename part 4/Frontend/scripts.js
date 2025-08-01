@@ -150,7 +150,7 @@ function displayPlaces(places) {
         }
         
         placeDiv.innerHTML = `
-            <img src="/images/appart.jpg" alt="${place.title}" class="place-image">
+            <img src="/images/minimum91.png" alt="${place.title}" class="place-image">
             <h3>${place.title}</h3>
             <p>${place.description}</p>
             <p>Location: ${place.latitude}, ${place.longitude}</p>
@@ -426,7 +426,7 @@ async function displayPlaceDetails(place) {
         }
         
         detailsSection.innerHTML = `
-            <img src="/images/appart.jpg" alt="${place.title}" class="place-image">
+            <img src="/images/minimum91.png" alt="${place.title}" class="place-image">
             <h2>${place.title}</h2>
             <div class="place-info">
                 <p>Host: ${ownerName}</p>
