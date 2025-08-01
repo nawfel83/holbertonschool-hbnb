@@ -1,0 +1,10 @@
+# Instance folder for database files
+# This folder contains the SQLite database files for the application
+
+# Files in this directory:
+# - hbnb.db (production database)
+# - hbnb_dev.db (development database) 
+# - hbnb_test.db (test database)
+
+# Note: Database files are created automatically when the application runs
+# No need to manually create them
