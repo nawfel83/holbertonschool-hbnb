@@ -1,0 +1,107 @@
+.place-card,
+.review-card {
+    margin: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}
+
+.place-details,
+.place-info,
+.add-review,
+.form {
+    margin: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}
+
+.details-button {
+    padding: 8px 16px;
+    border-radius: 5px;
+    border: none;
+    background: #007bff;
+    color: white;
+    cursor: pointer;
+}
+
+/* Basic error message styling */
+.error-message {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 10px 15px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* Simple form enhancements */
+.login-box input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.login-box button:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+}
+
+/* Login button styles */
+.login-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+.login-button:hover {
+    background-color: #0056b3;
+}
+
+.login-button:active {
+    transform: translateY(1px);
+}
+
+.login-button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Form container styles */
+#login-form {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+    .input-group input,
+    .error,
+    .login-button {
+        transition: none;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: more) {
+    .input-group input {
+        border-width: 3px;
+    }
+    
+    .input-group input:focus {
+        box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.3);
+    }
+}
