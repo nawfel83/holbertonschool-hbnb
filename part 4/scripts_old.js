@@ -1,128 +1,8 @@
 /* 
-  HBnB JavaScript
+  Enhanced HBnB JavaScript - Dynamic Functionality
 */
 
-let connected = false;
-let currentUser = '';
-
-function login() {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    
-    const accounts = {
-        'demo@hbnb.com': 'demo123',
-        'test@hbnb.com': 'test123',
-        'user@hbnb.com': 'user123'
-    };
-    
-    if (accounts[email] && accounts[email] === password) {
-        connected = true;
-        currentUser = email.split('@')[0];
-        
-        document.getElementById('login-btn').style.display = 'none';
-        document.getElementById('user-info').style.display = 'inline';
-        document.getElementById('username').textContent = currentUser;
-        
-        addCommentButtons();
-        
-        alert('Connecté ! Vous pouvez maintenant commenter.');
-        
-        setTimeout(() => {
-            window.location.href = 'index.html';
-        }, 1000);
-    } else {
-        alert('Mauvais identifiants');
-    }
-}
-
-function logout() {
-    connected = false;
-    currentUser = '';
-    
-    document.getElementById('login-btn').style.display = 'inline';
-    document.getElementById('user-info').style.display = 'none';
-    
-    removeCommentButtons();
-    
-    alert('Déconnecté');
-}
-
-function addCommentButtons() {
-    const placeCards = document.querySelectorAll('.place-card');
-    placeCards.forEach((card, index) => {
-        if (!card.querySelector('.comment-btn')) {
-            const btn = document.createElement('button');
-            btn.textContent = '💬 Commenter';
-            btn.className = 'comment-btn';
-            btn.onclick = () => showCommentForm(card, index);
-            card.appendChild(btn);
-        }
-    });
-}
-
-function removeCommentButtons() {
-    document.querySelectorAll('.comment-btn').forEach(btn => btn.remove());
-    document.querySelectorAll('.comment-form').forEach(form => form.remove());
-}
-
-function showCommentForm(card, placeIndex) {
-    const oldForm = card.querySelector('.comment-form');
-    if (oldForm) {
-        oldForm.remove();
-        return;
-    }
-    
-    const form = document.createElement('div');
-    form.className = 'comment-form';
-    form.style.cssText = 'background: #444; padding: 15px; margin: 10px 0; border-radius: 5px;';
-    
-    form.innerHTML = `
-        <h4>Ajouter un commentaire</h4>
-        <textarea placeholder="Votre commentaire..." style="width: 100%; height: 60px; margin: 5px 0;"></textarea>
-        <div>
-            Note: 
-            <select style="margin: 5px;">
-                <option value="5">⭐⭐⭐⭐⭐ 5/5</option>
-                <option value="4">⭐⭐⭐⭐ 4/5</option>
-                <option value="3">⭐⭐⭐ 3/5</option>
-                <option value="2">⭐⭐ 2/5</option>
-                <option value="1">⭐ 1/5</option>
-            </select>
-        </div>
-        <button onclick="submitComment(this, ${placeIndex})">Publier</button>
-        <button onclick="this.parentElement.remove()">Annuler</button>
-    `;
-    
-    card.appendChild(form);
-}
-
-function submitComment(button, placeIndex) {
-    const form = button.parentElement;
-    const textarea = form.querySelector('textarea');
-    const select = form.querySelector('select');
-    
-    const comment = textarea.value.trim();
-    const rating = select.value;
-    
-    if (!comment) {
-        alert('Écrivez un commentaire !');
-        return;
-    }
-    
-    const commentDiv = document.createElement('div');
-    commentDiv.style.cssText = 'background: #2a5298; padding: 10px; margin: 10px 0; border-radius: 5px; color: white;';
-    commentDiv.innerHTML = `
-        <strong>${currentUser}</strong> - ${'⭐'.repeat(rating)}
-        <p>${comment}</p>
-        <small>À l'instant</small>
-    `;
-    
-    form.parentElement.insertBefore(commentDiv, form);
-    form.remove();
-    
-    alert('Commentaire publié !');
-}
-
+// Base de données des logements
 const placesData = {
     'logement-occasion': {
         name: 'Logement d\'Occasion',
@@ -146,8 +26,8 @@ const placesData = {
         price: '$50 / nuit',
         mainImage: 'https://cdn.generationvoyage.fr/2022/02/logement-7-1.png',
         galleryImages: [
-            'https://cdn.generationvoyage.fr/2022/02/logement-7-1.png',
-            'https://cdn.generationvoyage.fr/2022/02/logement-1-1.png'
+            'https://a0.muscache.com/4ea/air/v2/pictures/monet/Select-2449004/original/45ac447f-202e-4058-92b3-f6819d1bd900?t=r:w1200-h720-sfit,e:fjpg-c90',
+            'https://tse1.mm.bing.net/th/id/OIP.hs55fgPdSHDOFC3F-NcCLgHaD5?r=0&rs=1&pid=ImgDetMain&o=7&rm=3'
         ],
         description: 'Logement moderne au cœur de la ville, proche de tous les commerces. Parfait pour explorer la ville à pied et profiter de tous les services urbains.',
         amenities: ['WiFi haut débit', 'Cuisine moderne', 'Balcon', 'Climatisation', 'Parking', 'Transports en commun'],
@@ -162,8 +42,8 @@ const placesData = {
         price: '$100 / nuit',
         mainImage: 'https://th.bing.com/th/id/R.8bdb31a1d24ce6b8916e49f2292de543?rik=y6HoIDR9%2fA95iw&pid=ImgRaw&r=0',
         galleryImages: [
-            'https://th.bing.com/th/id/R.8bdb31a1d24ce6b8916e49f2292de543?rik=y6HoIDR9%2fA95iw&pid=ImgRaw&r=0',
-            'https://cdn.generationvoyage.fr/2022/02/logement-1-1.png'
+            'https://imgs.6sqft.com/wp-content/uploads/2022/08/17095646/Yellow-House-model-One-Wall-Street-7.jpg',
+            'https://th.bing.com/th/id/R.fd0f43acd04f703c8e9767c8dfb761b4?rik=MYdCtaQg17wfEw&pid=ImgRaw&r=0&sres=1&sresct=1'
         ],
         description: 'Studio élégant dans un immeuble moderne avec toutes les commodités. Design contemporain et équipements haut de gamme pour un séjour confortable.',
         amenities: ['WiFi fibre', 'Salle de sport', 'Concierge', 'Terrasse commune', 'Sécurité 24h/24', 'Ascenseur'],
@@ -178,8 +58,8 @@ const placesData = {
         price: '$100 / nuit',
         mainImage: 'https://offloadmedia.feverup.com/lyonsecret.com/wp-content/uploads/2021/06/29070343/shutterstock_1531738394-1-1024x683.jpg',
         galleryImages: [
-            'https://offloadmedia.feverup.com/lyonsecret.com/wp-content/uploads/2021/06/29070343/shutterstock_1531738394-1-1024x683.jpg',
-            'https://cdn.generationvoyage.fr/2022/02/logement-1-1.png'
+            'https://i.pinimg.com/originals/f6/81/ea/f681ea00b7f17a913a83f93cad0eba3c.jpg',
+            'https://tse1.mm.bing.net/th/id/OIP.JLhVclmcyb55G20UTNpZsgHaFi?r=0&rs=1&pid=ImgDetMain&o=7&rm=3'
         ],
         description: 'Échappez-vous dans ce logement en pleine nature, calme et ressourçant. Parfait pour se déconnecter du stress urbain et retrouver la sérénité.',
         amenities: ['Vue panoramique', 'Cheminée', 'Jardin privé', 'Barbecue', 'Randonnées à proximité', 'Air pur'],
@@ -188,14 +68,30 @@ const placesData = {
             { comment: 'Parfait pour une déconnexion totale, je recommande vivement.', user: 'Thomas Verdier', rating: '★★★★★ 5/5' }
         ]
     },
+    'villa-piscine': {
+        name: 'Villa avec Piscine',
+        host: 'Roberto Carlos',
+        price: '$200 / nuit',
+        mainImage: 'https://th.bing.com/th/id/R.870bb196d67e6dd3f9c7b091a4477db6?rik=RFL%2bguP6w8DTWA&riu=http%3a%2f%2fwww.gordes-luberon.com%2fztock%2fgordes-luberon-location-piscine.jpg&ehk=TZWkEZmYLY1jQoqKJSoGoTjr9jMSewjgpTLOJ4RWgBo%3d&risl=1&pid=ImgRaw&r=0',
+        galleryImages: [
+            'https://assets-global.website-files.com/633c38a2818ee9364b4d1859/654e5f909663630c57e3277c_chalet-montagne-avec-piscine.png',
+            'https://tse1.mm.bing.net/th/id/OIP.Bc_o72y69rqq5x0AKn8FjgAAAA?r=0&rs=1&pid=ImgDetMain&o=7&rm=3'
+        ],
+        description: 'Magnifique villa avec piscine privée, idéale pour des vacances de rêve. Luxe et détente garantis dans un cadre exceptionnel.',
+        amenities: ['Piscine privée', 'Jacuzzi', 'Cuisine chef', 'Service ménage', 'Jardins paysagers', 'Terrasse panoramique'],
+        reviews: [
+            { comment: 'Villa de rêve ! Piscine magnifique et vue imprenable !', user: 'Emmanuel Petit', rating: '★★★★★ 5/5' },
+            { comment: 'Vacances parfaites, la villa dépasse toutes les attentes.', user: 'Chloé Garnier', rating: '★★★★★ 5/5' }
+        ]
+    },
     'logement-luxe': {
         name: 'Logement de Luxe',
         host: 'Raheem Sterling',
         price: '$200 / nuit',
         mainImage: 'https://th.bing.com/th/id/R.71168989b965ab7a44303873f6d662e1?rik=Qan76jaH30nDSw&pid=ImgRaw&r=0',
         galleryImages: [
-            'https://th.bing.com/th/id/R.71168989b965ab7a44303873f6d662e1?rik=Qan76jaH30nDSw&pid=ImgRaw&r=0',
-            'https://cdn.generationvoyage.fr/2022/02/logement-1-1.png'
+            'https://tse3.mm.bing.net/th/id/OIP.14N7xmly-ZsQQ7Lr47MdiAHaEo?r=0&rs=1&pid=ImgDetMain&o=7&rm=3',
+            'https://www.papercitymag.com/wp-content/uploads/2022/08/Brava-10th-level-social-lounge-4-Image-courtesy-of-Hines-1200x800.jpg'
         ],
         description: 'Expérience haut de gamme dans ce logement luxueux avec services premium. Le summum du raffinement et de l\'élégance pour un séjour d\'exception.',
         amenities: ['Conciergerie', 'Spa privé', 'Chef à domicile', 'Chauffeur', 'Service premium 24h/24', 'Vue panoramique'],
@@ -210,8 +106,8 @@ const placesData = {
         price: '$200 / nuit',
         mainImage: 'https://th.bing.com/th/id/R.a9f34fe1621bc5b434560f2108eea67c?rik=35e6%2fBt8noSMEA&pid=ImgRaw&r=0',
         galleryImages: [
-            'https://th.bing.com/th/id/R.a9f34fe1621bc5b434560f2108eea67c?rik=35e6%2fBt8noSMEA&pid=ImgRaw&r=0',
-            'https://cdn.generationvoyage.fr/2022/02/logement-1-1.png'
+            'https://th.bing.com/th/id/R.1df0bd87d92a33beec9347fdffbdbc8e?rik=74DGY6yVyjl5vQ&pid=ImgRaw&r=0',
+            'https://th.bing.com/th/id/R.1e0c3373930e3cf3db88a599d930aa3d?rik=MwKhVmQ9yWEoHw&riu=http%3a%2f%2fwww.casatypik.com%2fwp-content%2fuploads%2f2012%2f07%2fmaison-nuage-7.jpg&ehk=e0A3IaTw2IpFB%2f7pw2AYgHpbTSqcE71POzU0H9tBPCc%3d&risl=&pid=ImgRaw&r=0'
         ],
         description: 'Logement unique et original pour une expérience inoubliable et authentique. Architecture surprenante et caractère unique pour les voyageurs en quête d\'originalité.',
         amenities: ['Design unique', 'Architecture originale', 'Expérience immersive', 'Photo-friendly', 'Histoire fascinante', 'Concept novateur'],
@@ -223,11 +119,14 @@ const placesData = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Détection de la page actuelle
     const currentPage = window.location.pathname.split('/').pop();
     
     if (currentPage === 'place.html') {
+        // Page de détail - charger les informations du logement
         loadPlaceDetails();
     } else {
+        // Page d'accueil - animations et filtrage
         animatePageLoad();
         setupPriceFilter();
         setupNavigation();
@@ -235,36 +134,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// Chargement des détails du logement
 function loadPlaceDetails() {
     const urlParams = new URLSearchParams(window.location.search);
     const placeId = urlParams.get('id') || 'logement-occasion';
     const placeData = placesData[placeId];
     
-    console.log('Chargement du logement:', placeId);
-    console.log('Données du logement:', placeData);
-    
     if (!placeData) {
         console.error('Logement non trouvé:', placeId);
+        // Redirection vers la page d'accueil si le logement n'existe pas
         window.location.href = 'index.html';
         return;
     }
     
+    // Remplir les détails du logement
     const placeDetailsSection = document.getElementById('place-details');
     if (placeDetailsSection) {
-        console.log('Section place-details trouvée, ajout du contenu...');
-        console.log('Image principale:', placeData.mainImage);
-        console.log('Images de galerie:', placeData.galleryImages);
-        
         placeDetailsSection.innerHTML = `
             <div class="place-info">
                 <h2>${placeData.name}</h2>
                 <p class="host">Hôte: ${placeData.host}</p>
                 <p class="price">${placeData.price}</p>
                 <div class="place-images">
-                    <img src="${placeData.mainImage}" alt="Vue principale" class="main-detail-image" onload="console.log('Image principale chargée')" onerror="console.error('Erreur chargement image principale')">
+                    <img src="${placeData.mainImage}" alt="Vue principale" class="main-detail-image">
                     <div class="detail-gallery">
                         ${placeData.galleryImages.map((img, index) => 
-                            `<img src="${img}" alt="Vue intérieure ${index + 1}" class="detail-gallery-image" onload="console.log('Image galerie ${index + 1} chargée')" onerror="console.error('Erreur chargement image galerie ${index + 1}')">`
+                            `<img src="${img}" alt="Vue intérieure ${index + 1}" class="detail-gallery-image">`
                         ).join('')}
                     </div>
                 </div>
@@ -277,12 +172,9 @@ function loadPlaceDetails() {
                 </div>
             </div>
         `;
-        
-        console.log('Contenu HTML ajouté à place-details');
-    } else {
-        console.error('Section place-details non trouvée !');
     }
     
+    // Remplir les avis
     const reviewsList = document.getElementById('reviews-list');
     if (reviewsList && placeData.reviews) {
         reviewsList.innerHTML = placeData.reviews.map(review => `
@@ -294,8 +186,10 @@ function loadPlaceDetails() {
         `).join('');
     }
     
+    // Mise à jour du titre de la page
     document.title = `HBnB - ${placeData.name}`;
     
+    // Animations pour la page de détail
     setTimeout(() => {
         const placeInfo = document.querySelector('.place-info');
         const reviewCards = document.querySelectorAll('.review-card');
@@ -322,10 +216,12 @@ function loadPlaceDetails() {
     }, 100);
 }
 
+// Animation au chargement de la page
 function animatePageLoad() {
     const cards = document.querySelectorAll('.place-card');
     const filter = document.querySelector('#filter');
     
+    // Animation du filtre
     if (filter) {
         filter.style.opacity = '0';
         filter.style.transform = 'translateY(-20px)';
@@ -336,6 +232,7 @@ function animatePageLoad() {
         }, 200);
     }
     
+    // Animation des cartes avec délai progressif
     cards.forEach((card, index) => {
         card.style.opacity = '0';
         card.style.transform = 'translateY(30px)';
@@ -347,12 +244,15 @@ function animatePageLoad() {
     });
 }
 
+// Configuration du filtrage par prix avec effets commerciaux
 function setupPriceFilter() {
     const priceFilter = document.getElementById('price-filter');
+    const placeCards = document.querySelectorAll('.place-card');
     const filterContainer = document.querySelector('.filter-container');
     
     if (!priceFilter) return;
     
+    // Effet de focus commercial sur le select
     priceFilter.addEventListener('focus', function() {
         filterContainer.style.transform = 'scale(1.08)';
         filterContainer.style.background = 'rgba(52, 152, 219, 0.1)';
@@ -367,11 +267,8 @@ function setupPriceFilter() {
     
     priceFilter.addEventListener('change', function() {
         const selectedPrice = this.value;
-        const placeCards = document.querySelectorAll('.place-card');
         
-        console.log('Filtre sélectionné:', selectedPrice);
-        console.log('Nombre de cartes trouvées:', placeCards.length);
-        
+        // Effet de feedback visuel sur le filtre
         filterContainer.style.background = 'rgba(46, 204, 113, 0.2)';
         filterContainer.style.borderColor = '#2ecc71';
         filterContainer.style.transform = 'scale(1.1)';
@@ -383,32 +280,26 @@ function setupPriceFilter() {
         }, 500);
         
         placeCards.forEach((card, index) => {
-            const priceElement = card.querySelector('.price');
-            if (!priceElement) return;
+            const priceText = card.querySelector('.price').textContent;
+            const cardPrice = priceText.match(/\$(\d+)/)[1];
             
-            const priceText = priceElement.textContent;
-            const cardPrice = priceText.match(/\$(\d+)/);
-            const cardPriceValue = cardPrice ? cardPrice[1] : '';
-            
-            console.log('Prix de la carte:', cardPriceValue, 'vs filtre:', selectedPrice);
-            
-            if (selectedPrice === '' || cardPriceValue === selectedPrice) {
-
+            if (selectedPrice === '' || cardPrice === selectedPrice) {
+                // Afficher la carte avec animation premium
                 setTimeout(() => {
                     card.style.display = 'block';
                     card.style.opacity = '0';
-                    card.style.transform = 'scale(0.8) translateY(30px)';
+                    card.style.transform = 'scale(0.8) translateY(30px) rotateX(15deg)';
                     setTimeout(() => {
-                        card.style.transition = 'all 0.6s ease';
+                        card.style.transition = 'all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
                         card.style.opacity = '1';
-                        card.style.transform = 'scale(1) translateY(0)';
+                        card.style.transform = 'scale(1) translateY(0) rotateX(0deg)';
                     }, 50);
-                }, index * 100);
+                }, index * 150);
             } else {
-    
+                // Masquer la carte avec animation
                 card.style.transition = 'all 0.4s ease';
                 card.style.opacity = '0';
-                card.style.transform = 'scale(0.8) translateY(-30px)';
+                card.style.transform = 'scale(0.8) translateY(-30px) rotateX(-15deg)';
                 setTimeout(() => {
                     card.style.display = 'none';
                 }, 400);
@@ -417,25 +308,26 @@ function setupPriceFilter() {
     });
 }
 
+// Navigation dynamique
 function setupNavigation() {
     const navLinks = document.querySelectorAll('nav a');
     
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
-
+            // Animation du clic
             this.style.transform = 'scale(0.95)';
             setTimeout(() => {
                 this.style.transform = 'scale(1)';
             }, 150);
             
-
+            // Effet de transition pour la navigation
             if (this.href !== window.location.href) {
                 document.body.style.opacity = '0.7';
                 document.body.style.transform = 'scale(0.98)';
             }
         });
         
-
+        // Effet hover amélioré
         link.addEventListener('mouseenter', function() {
             this.style.transform = 'translateY(-2px)';
         });
@@ -446,12 +338,12 @@ function setupNavigation() {
     });
 }
 
-
+// Animations des cartes
 function setupCardAnimations() {
     const cards = document.querySelectorAll('.place-card');
     
     cards.forEach(card => {
-
+        // Animation d'entrée au scroll
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -464,7 +356,7 @@ function setupCardAnimations() {
         
         observer.observe(card);
         
-
+        // Effet parallaxe léger au survol
         card.addEventListener('mousemove', function(e) {
             const rect = card.getBoundingClientRect();
             const x = e.clientX - rect.left;
@@ -486,9 +378,10 @@ function setupCardAnimations() {
 }
 
 /* 
-  Page principale avec API
+  NOUVELLES FONCTIONNALITÉS - Page principale avec API
 */
 
+// ✅ Fonction pour obtenir un cookie par son nom
 function getCookie(name) {
     const cookies = document.cookie.split(';');
     for (let cookie of cookies) {
@@ -498,33 +391,36 @@ function getCookie(name) {
     return null;
 }
 
+// ✅ Vérifier l'authentification de l'utilisateur
 function checkAuthentication() {
     const token = getCookie('access_token');
     const loginLink = document.getElementById('login-link');
 
     if (!token) {
-
+        // Pas de token - afficher le lien de connexion
         if (loginLink) {
             loginLink.style.display = 'block';
         }
-       
+        // Récupérer les places sans authentification
         fetchPlaces(null);
     } else {
-
+        // Token présent - masquer le lien de connexion
         if (loginLink) {
             loginLink.style.display = 'none';
         }
-        
+        // Récupérer les places avec authentification
         fetchPlaces(token);
     }
 }
 
+// ✅ Récupérer les données des logements via l'API
 async function fetchPlaces(token) {
     try {
         const headers = {
             'Content-Type': 'application/json'
         };
         
+        // Ajouter le token si disponible
         if (token) {
             headers['Authorization'] = `Bearer ${token}`;
         }
@@ -539,19 +435,20 @@ async function fetchPlaces(token) {
             displayPlaces(places);
         } else {
             console.error('Erreur lors du chargement des logements:', response.statusText);
-
+            // En cas d'erreur, garder l'affichage statique existant
         }
     } catch (error) {
         console.error('Erreur de connexion à l\'API:', error);
-
+        // En cas d'erreur de connexion, garder l'affichage statique existant
     }
 }
 
+// ✅ Afficher les logements dynamiquement
 function displayPlaces(places) {
     const placesList = document.getElementById('places-list');
     if (!placesList) return;
     
-
+    // Vider la liste actuelle
     placesList.innerHTML = '';
 
     places.forEach(place => {
@@ -571,12 +468,13 @@ function displayPlaces(places) {
         placesList.appendChild(placeEl);
     });
     
-
+    // Réappliquer les effets visuels aux nouvelles cartes
     if (typeof addCardHoverEffects === 'function') {
         addCardHoverEffects();
     }
 }
 
+// ✅ Implémenter le filtre côté client par prix
 function initializePriceFilter() {
     const priceFilter = document.getElementById('price-filter');
     if (!priceFilter) return;
@@ -597,19 +495,20 @@ function initializePriceFilter() {
     });
 }
 
+// ✅ Initialisation au chargement de la page
 document.addEventListener('DOMContentLoaded', function() {
-
+    // Vérifier si on est sur la page d'accueil
     if (document.getElementById('places-list')) {
         checkAuthentication();
         initializePriceFilter();
     }
     
-
+    // Vérifier si on est sur la page de détails d'un lieu
     if (document.getElementById('place-details')) {
         initializePlaceDetailsPage();
     }
     
-
+    // Vérifier si on est sur la page d'ajout d'avis
     if (document.getElementById('review-form') && window.location.pathname.includes('add_review.html')) {
         initializeAddReviewPage();
     }
@@ -619,18 +518,20 @@ document.addEventListener('DOMContentLoaded', function() {
   FONCTIONNALITÉS DE LA PAGE DE DÉTAILS D'UN LIEU
 */
 
+// ✅ Obtenir l'ID du lieu depuis l'URL
 function getPlaceIdFromURL() {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get('id');
 }
 
+// ✅ Vérifier l'authentification pour la page de détails
 function checkAuthenticationForDetails() {
     const token = getCookie('access_token');
     const loginLink = document.getElementById('login-link');
     const addReviewSection = document.getElementById('add-review');
 
     if (!token) {
-
+        // Pas de token - afficher le lien de connexion et cacher le formulaire d'avis
         if (loginLink) {
             loginLink.style.display = 'block';
         }
@@ -639,7 +540,7 @@ function checkAuthenticationForDetails() {
         }
         return null;
     } else {
-
+        // Token présent - masquer le lien de connexion et afficher le formulaire d'avis
         if (loginLink) {
             loginLink.style.display = 'none';
         }
@@ -650,12 +551,14 @@ function checkAuthenticationForDetails() {
     }
 }
 
+// ✅ Récupérer les détails du lieu depuis l'API
 async function fetchPlaceDetails(token, placeId) {
     try {
         const headers = {
             'Content-Type': 'application/json'
         };
         
+        // Ajouter le token si disponible
         if (token) {
             headers['Authorization'] = `Bearer ${token}`;
         }
@@ -680,14 +583,17 @@ async function fetchPlaceDetails(token, placeId) {
     }
 }
 
+// ✅ Afficher les détails du lieu
 function displayPlaceDetails(place) {
     const placeDetailsSection = document.getElementById('place-details');
     const reviewsList = document.getElementById('reviews-list');
     
     if (!placeDetailsSection) return;
 
+    // Vider le contenu actuel
     placeDetailsSection.innerHTML = '';
 
+    // Créer le HTML pour les détails du lieu
     const placeHTML = `
         <div class="place-header">
             <h1>${place.name}</h1>
@@ -714,11 +620,13 @@ function displayPlaceDetails(place) {
 
     placeDetailsSection.innerHTML = placeHTML;
 
+    // Afficher les avis
     if (reviewsList && place.reviews) {
         displayReviews(place.reviews);
     }
 }
 
+// ✅ Afficher les avis
 function displayReviews(reviews) {
     const reviewsList = document.getElementById('reviews-list');
     if (!reviewsList) return;
@@ -745,6 +653,7 @@ function displayReviews(reviews) {
     reviewsList.innerHTML = reviewsHTML;
 }
 
+// ✅ Formater la date
 function formatDate(dateString) {
     const date = new Date(dateString);
     return date.toLocaleDateString('fr-FR', { 
@@ -754,6 +663,7 @@ function formatDate(dateString) {
     });
 }
 
+// ✅ Afficher un message d'erreur
 function displayErrorMessage(message) {
     const placeDetailsSection = document.getElementById('place-details');
     if (placeDetailsSection) {
@@ -767,6 +677,7 @@ function displayErrorMessage(message) {
     }
 }
 
+// ✅ Afficher un message "Lieu introuvable"
 function displayPlaceNotFound() {
     const placeDetailsSection = document.getElementById('place-details');
     if (placeDetailsSection) {
@@ -780,6 +691,7 @@ function displayPlaceNotFound() {
     }
 }
 
+// ✅ Initialiser la page de détails
 function initializePlaceDetailsPage() {
     const placeId = getPlaceIdFromURL();
     
@@ -788,21 +700,26 @@ function initializePlaceDetailsPage() {
         return;
     }
 
+    // Vérifier l'authentification
     const token = checkAuthenticationForDetails();
     
+    // Récupérer les détails du lieu
     fetchPlaceDetails(token, placeId);
     
+    // Initialiser le formulaire d'avis si l'utilisateur est connecté
     if (token) {
         initializeReviewForm(token, placeId);
     }
 }
 
+// ✅ Initialiser le formulaire d'avis
 function initializeReviewForm(token, placeId) {
     const reviewForm = document.getElementById('review-form');
     const addReviewSection = document.getElementById('add-review');
     
     if (!addReviewSection) return;
 
+    // Ajouter un bouton pour aller vers la page d'ajout d'avis
     addReviewSection.innerHTML = `
         <h2>Ajouter un Avis</h2>
         <p>Partagez votre expérience avec ce logement :</p>
@@ -811,6 +728,7 @@ function initializeReviewForm(token, placeId) {
         </a>
     `;
 
+    // Garder l'ancien code du formulaire si nécessaire
     if (reviewForm) {
         reviewForm.addEventListener('submit', async function(event) {
             event.preventDefault();
@@ -823,10 +741,11 @@ function initializeReviewForm(token, placeId) {
                 return;
             }
 
-
+            // Ici, vous pourriez ajouter l'appel API pour soumettre l'avis
+            // Pour l'instant, on affiche juste un message de confirmation
             alert('Avis soumis avec succès ! (Fonctionnalité en développement)');
             
-
+            // Réinitialiser le formulaire
             reviewForm.reset();
         });
     }
@@ -836,16 +755,18 @@ function initializeReviewForm(token, placeId) {
   FONCTIONNALITÉS DE LA PAGE D'AJOUT D'AVIS
 */
 
+// ✅ Vérifier l'authentification pour la page d'ajout d'avis
 function checkAuthenticationForAddReview() {
     const token = getCookie('access_token');
     
     if (!token) {
-
+        // Pas de token - rediriger vers l'accueil
         alert('Vous devez être connecté pour ajouter un avis.');
         window.location.href = 'index.html';
         return null;
     }
     
+    // Masquer le lien de connexion si l'utilisateur est connecté
     const loginLink = document.getElementById('login-link');
     if (loginLink) {
         loginLink.style.display = 'none';
@@ -854,11 +775,13 @@ function checkAuthenticationForAddReview() {
     return token;
 }
 
+// ✅ Obtenir l'ID du lieu depuis l'URL pour l'ajout d'avis
 function getPlaceIdFromURLForReview() {
     const params = new URLSearchParams(window.location.search);
     return params.get('place_id');
 }
 
+// ✅ Charger les informations du lieu pour l'affichage
 async function loadPlaceInfoForReview(placeId) {
     try {
         const response = await fetch(`http://localhost:5000/api/v1/places/${placeId}`, {
@@ -879,6 +802,7 @@ async function loadPlaceInfoForReview(placeId) {
     }
 }
 
+// ✅ Afficher les informations du lieu en en-tête
 function displayPlaceInfoHeader(place) {
     const placeInfoDiv = document.getElementById('place-info');
     if (!placeInfoDiv) return;
@@ -896,6 +820,7 @@ function displayPlaceInfoHeader(place) {
     `;
 }
 
+// ✅ Soumettre l'avis via l'API
 async function submitReview(token, placeId, reviewText, rating) {
     try {
         const response = await fetch(`http://localhost:5000/api/v1/places/${placeId}/reviews`, {
@@ -918,6 +843,7 @@ async function submitReview(token, placeId, reviewText, rating) {
     }
 }
 
+// ✅ Gérer la réponse de l'API
 async function handleReviewResponse(response) {
     const messageContainer = document.getElementById('message-container');
     
@@ -925,11 +851,13 @@ async function handleReviewResponse(response) {
         const data = await response.json();
         showMessage('Avis soumis avec succès ! Merci pour votre contribution.', 'success');
         
+        // Réinitialiser le formulaire
         const reviewForm = document.getElementById('review-form');
         if (reviewForm) {
             reviewForm.reset();
         }
         
+        // Rediriger vers la page du lieu après 2 secondes
         setTimeout(() => {
             const placeId = getPlaceIdFromURLForReview();
             window.location.href = `place.html?id=${placeId}`;
@@ -942,6 +870,7 @@ async function handleReviewResponse(response) {
     }
 }
 
+// ✅ Afficher les messages de succès/erreur
 function showMessage(message, type) {
     const messageContainer = document.getElementById('message-container');
     if (!messageContainer) return;
@@ -955,6 +884,7 @@ function showMessage(message, type) {
     `;
     messageContainer.style.display = 'block';
 
+    // Masquer le message après 5 secondes pour les erreurs
     if (type === 'error') {
         setTimeout(() => {
             messageContainer.style.display = 'none';
@@ -962,11 +892,13 @@ function showMessage(message, type) {
     }
 }
 
+// ✅ Initialiser la page d'ajout d'avis
 function initializeAddReviewPage() {
-
+    // Vérifier l'authentification
     const token = checkAuthenticationForAddReview();
-    if (!token) return;
+    if (!token) return; // L'utilisateur sera redirigé
 
+    // Obtenir l'ID du lieu
     const placeId = getPlaceIdFromURLForReview();
     if (!placeId) {
         alert('Aucun lieu spécifié pour l\'avis.');
@@ -1088,8 +1020,8 @@ function hideErrorMessage() {
 // Fonction principale de connexion
 async function handleLogin(email, password) {
     try {
-        // Requête AJAX vers l'API de connexion backend
-        const response = await fetch('http://localhost:8000/api/login', {
+        // Requête AJAX vers l'API de connexion backend (part 3)
+        const response = await fetch('http://localhost:5000/api/v1/auth/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -1102,10 +1034,9 @@ async function handleLogin(email, password) {
 
         const data = await response.json();
 
-        if (response.ok && data.success) {
-            // Connexion réussie - Stocker le token dans un cookie
-            setCookie('access_token', data.token, 7); // Cookie valide 7 jours
-            setCookie('user_name', data.user_name, 7); // Stocker le nom d'utilisateur
+        if (response.ok && data.access_token) {
+            // Connexion réussie - Stocker le token JWT dans un cookie
+            setCookie('access_token', data.access_token, 7); // Cookie valide 7 jours
             
             // Masquer le message d'erreur s'il existe
             hideErrorMessage();

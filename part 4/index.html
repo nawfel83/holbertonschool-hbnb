@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,9 +13,14 @@
         </div>
         <nav>
             <a href="index.html">Home</a>
-            <a href="login.html" id="login-link" class="login-button">Login</a>
+            <a href="login.html" id="login-btn" class="login-button">Login</a>
+            <span id="user-info" style="display: none;">
+                Bonjour <span id="username"></span> 
+                <a href="#" onclick="logout()">Déconnexion</a>
+            </span>
         </nav>
     </header>
+    
     <main>
         <!-- Section Titre Central -->
         <section id="hero-section">
@@ -23,27 +28,6 @@
                 <h1 class="main-title">HBnB</h1>
                 <img src="https://user-images.githubusercontent.com/99370798/275349107-cde822dc-8998-4944-a3ae-2ba839dd2878.png" alt="HBnB Illustration" class="hero-image">
                 <p class="main-tagline">Cliquer Trouver Loger</p>
-            </div>
-        </section>
-        
-        <!-- Section Descriptions Commerciales -->
-        <section id="features-section">
-            <div class="features-container">
-                <div class="feature-card">
-                    <div class="feature-icon">💎</div>
-                    <h3>Ultra Luxury</h3>
-                    <p>Propriétés d'exception avec services haut de gamme et équipements premium</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🏟️</div>
-                    <h3>Exclusive Access</h3>
-                    <p>Accès privilégié aux plus belles propriétés privées du monde entier</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🔒</div>
-                    <h3>Private Concierge</h3>
-                    <p>Service de conciergerie privé 24h/24 pour une expérience sur mesure</p>
-                </div>
             </div>
         </section>
         
@@ -81,7 +65,7 @@
 
             <div class="place-card" data-id="studio-building">
                 <img src="https://th.bing.com/th/id/R.8bdb31a1d24ce6b8916e49f2292de543?rik=y6HoIDR9%2fA95iw&pid=ImgRaw&r=0" alt="Studio dans un Building" class="place-image">
-                <h3>Studio dans un Building</h3>
+                <h3>Logement dans un Building</h3>
                 <p class="price">$100 / nuit</p>
                 <p>Studio élégant dans un immeuble moderne avec toutes les commodités.</p>
                 <a href="place.html?id=studio-building" class="details-button">Voir les détails</a>
@@ -93,14 +77,6 @@
                 <p class="price">$100 / nuit</p>
                 <p>Échappez-vous dans ce logement en pleine nature, calme et ressourçant.</p>
                 <a href="place.html?id=logement-naturel" class="details-button">Voir les détails</a>
-            </div>
-
-            <div class="place-card" data-id="villa-piscine">
-                <img src="https://th.bing.com/th/id/R.870bb196d67e6dd3f9c7b091a4477db6?rik=RFL%2bguP6w8DTWA&riu=http%3a%2f%2fwww.gordes-luberon.com%2fztock%2fgordes-luberon-location-piscine.jpg&ehk=TZWkEZmYLY1jQoqKJSoGoTjr9jMSewjgpTLOJ4RWgBo%3d&risl=1&pid=ImgRaw&r=0" alt="Villa avec Piscine" class="place-image">
-                <h3>Villa avec Piscine</h3>
-                <p class="price">$200 / nuit</p>
-                <p>Magnifique villa avec piscine privée, idéale pour des vacances de rêve.</p>
-                <a href="place.html?id=villa-piscine" class="details-button">Voir les détails</a>
             </div>
 
             <div class="place-card" data-id="logement-luxe">
@@ -123,6 +99,6 @@
     <footer>
         <p>&copy; 2025 HBnB. All rights reserved.</p>
     </footer>
-    <script src="scripts.js"></script>
+    <script src="scripts_simple.js"></script>
 </body>
 </html>
