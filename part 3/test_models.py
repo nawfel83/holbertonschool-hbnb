@@ -17,11 +17,15 @@ def test_crud_operations():
         # Test 1: Créer un utilisateur
         print("1. Test création d'utilisateur...")
         user = User(
-            email='test@example.com',
-            password='testpass123',
-            first_name='Test',
-            last_name='User'
+            email='nwf@example.com',
+            password='azerty123',
+            first_name='Nawfel',
+            last_name='Laklit'
         )
+        print("Hash du mot de passe:", user.password_hash)
+        assert user.password_hash.startswith('$2'), "Le hash ne commence pas par $2 (bcrypt)"
+        assert 'azerty123' not in user.password_hash, "Le mot de passe est stocké en clair !"
+        
         db.session.add(user)
         db.session.commit()
         print(f"✓ Utilisateur créé avec ID: {user.id}")

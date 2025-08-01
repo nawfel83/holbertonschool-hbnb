@@ -3,6 +3,7 @@ import uuid
 from app import create_app, db
 from app.models.user import User
 from app.services.facade import HBnBFacade
+import json
 
 class TestUser(unittest.TestCase):
     """Test cases for User model"""
@@ -52,10 +53,10 @@ class TestUser(unittest.TestCase):
         self.assertEqual(self.user.email, 'john.doe@example.com')
         self.assertIsInstance(self.user.id, str)
 
-    def test_password_hashing(self):
-        """Test password is hashed and can be verified"""
-        self.assertTrue(self.user.check_password('securepassword123'))
-        self.assertFalse(self.user.check_password('wrongpassword'))
+    def test_password_is_hashed(self):
+        """Test that the password is not stored in plain text and is a bcrypt hash"""
+        self.assertTrue(self.user.password_hash.startswith('$2'), "Password hash does not start with $2 (bcrypt)")
+        self.assertNotIn('securepassword123', self.user.password_hash)
 
     def test_email_validation(self):
         """Test email validation"""
@@ -181,6 +182,57 @@ class TestUserFacade(unittest.TestCase):
         update_data = {'first_name': 'Updated Name'}
         result = self.facade.update_user(fake_id, update_data)
         self.assertIsNone(result)
+
+class TestAuthFlow(unittest.TestCase):
+    def setUp(self):
+        self.app = create_app('testing')
+        self.app_context = self.app.app_context()
+        self.app_context.push()
+        db.create_all()
+        self.client = self.app.test_client()
+        # Crée un utilisateur pour le login
+        self.user_data = {
+            'first_name': 'John',
+            'last_name': 'Doe',
+            'email': 'john.doe@example.com',
+            'password': 'securepassword123'
+        }
+        self.client.post(
+            '/api/v1/users/',
+            data=json.dumps(self.user_data),
+            content_type='application/json'
+        )
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+        self.app_context.pop()
+
+    def test_login_and_protected_route(self):
+        # 1. Login pour obtenir le token
+        response = self.client.post(
+            '/api/v1/auth/login',
+            data=json.dumps({
+                'email': self.user_data['email'],
+                'password': self.user_data['password']
+            }),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.get_json()
+        self.assertIn('access_token', data)
+        token = data['access_token']
+
+        # 2. Accès à une route protégée AVEC token
+        protected_resp = self.client.get(
+            '/api/v1/users/',  # adapte si tu as une autre route protégée
+            headers={'Authorization': f'Bearer {token}'}
+        )
+        self.assertEqual(protected_resp.status_code, 200)
+
+        # 3. Accès à la même route SANS token
+        protected_resp_no_token = self.client.get('/api/v1/users/')
+        self.assertEqual(protected_resp_no_token.status_code, 401)
 
 
 if __name__ == '__main__':

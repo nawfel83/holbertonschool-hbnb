@@ -11,7 +11,7 @@ user_model = api.model('User', {
     'first_name': fields.String(required=True, description='User\'s first name'),
     'last_name': fields.String(required=True, description='User\'s last name'),
     'email': fields.String(required=True, description='User\'s email address'),
-    'password': fields.String(required=True, description='User\'s password (write-only)')
+    'password': fields.String(required=True, description='User\'s password', writeOnly=True)
 })
 
 user_response_model = api.model('UserResponse', {
@@ -31,7 +31,7 @@ class UserResource(Resource):
         user = facade.get_user(user_id)
         if not user:
             return {'error': 'User not found'}, 404
-        return vars(user), 200
+        return user.to_dict(), 200
 
     @api.expect(user_model, validate=True)
     @api.marshal_with(user_response_model)
@@ -47,8 +47,8 @@ class UserResource(Resource):
             updated_user = facade.update_user(user_id, user_data)
             if not updated_user:
                 return {'error': 'User not found'}, 404
-            return vars(updated_user), 200
-        
+            return updated_user.to_dict(), 200
+
         if user_id != current_user['id']:
             return {'error': 'Unauthorized action'}, 403
         
@@ -58,7 +58,7 @@ class UserResource(Resource):
         updated_user = facade.update_user(user_id, user_data)
         if not updated_user:
             return {'error': 'User not found'}, 404
-        return vars(updated_user), 200
+        return updated_user.to_dict(), 200
 
 @api.route('/')
 class UserList(Resource):
@@ -67,7 +67,7 @@ class UserList(Resource):
     def get(self):
         """Retrieve the list of all users"""
         users = facade.get_all_users()
-        return [vars(user) for user in users], 200
+        return [user.to_dict() for user in users], 200
 
     @api.expect(user_model, validate=True)
     @api.marshal_with(user_response_model, code=201)
@@ -76,10 +76,10 @@ class UserList(Resource):
     @jwt_required()
     @admin_required
     def post(self):
-        """Create a new user (Admin only)"""
+        """Register a new user (public endpoint)"""
         user_data = request.json
         try:
             new_user = facade.create_user(user_data)
-            return vars(new_user), 201
+            return new_user.to_dict(), 201
         except ValueError as e:
             return {'error': str(e)}, 400

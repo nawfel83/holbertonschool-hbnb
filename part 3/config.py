@@ -8,8 +8,12 @@ class Config:
     
 class DevelopmentConfig(Config):
     """Configuration pour le développement"""
+    JWT_SECRET_KEY = "super-secret-key"
+    JWT_TOKEN_LOCATION = ["headers"]
+    JWT_HEADER_NAME = "Authorization"
+    JWT_HEADER_TYPE = "Bearer"
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///hbnb_dev.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///hbnb.db'
 
 class ProductionConfig(Config):
     """Configuration pour la production"""
@@ -20,7 +24,7 @@ class TestingConfig(Config):
     """Configuration pour les tests"""
     TESTING = True
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///hbnb.db'
     WTF_CSRF_ENABLED = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 

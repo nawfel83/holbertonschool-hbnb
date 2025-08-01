@@ -1,4 +1,5 @@
 from app import db, bcrypt
+from app import bcrypt
 import uuid
 import re
 
@@ -40,9 +41,8 @@ class User(db.Model):
         self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
     
     def check_password(self, password):
-        """Vérifier le mot de passe avec bcrypt"""
         return bcrypt.check_password_hash(self.password_hash, password)
-    
+
     @staticmethod
     def validate_email(email):
         """Valider le format de l'email"""

@@ -65,6 +65,8 @@ class ReviewResource(Resource):
         if not is_admin and review.user_id != current_user['id']:
             api.abort(403, "Unauthorized action")
         data = api.payload
+        if 'user_id' in data or 'place_id' in data:
+            api.abort(400, "You cannot modify user_id or place_id")
         review = facade.update_review(review_id, data)
         return vars(review)
 
