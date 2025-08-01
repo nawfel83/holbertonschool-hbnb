@@ -34,6 +34,24 @@ def init_database():
         else:
             print("Utilisateur administrateur existe déjà!")
         
+        # Créer un utilisateur lambda (non-admin)
+        jane_id = str(uuid.uuid4())
+        jane = User(
+            id=jane_id,
+            email='jane@example.com',
+            password='password123',
+            first_name='Jane',
+            last_name='Doe'
+        )
+        
+        # Vérifier si Jane existe déjà
+        existing_jane = User.query.filter_by(email='jane@example.com').first()
+        if not existing_jane:
+            db.session.add(jane)
+            print("Utilisateur lambda Jane créé!")
+        else:
+            print("Utilisateur lambda Jane existe déjà!")
+        
         # Créer des équipements de base
         amenities_data = [
             'WiFi', 'Parking', 'Air Conditioning', 'Kitchen',
