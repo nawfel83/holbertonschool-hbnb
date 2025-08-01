@@ -6,7 +6,7 @@ body {
     font-family: 'Segoe UI', Arial, sans-serif;
     margin: 0;
     padding: 0;
-    padding-bottom: 80px; /* Add space for fixed footer */
+    padding-bottom: 80px; /* Reserve space for the fixed footer to prevent content overlap */
 }
 
 header {
@@ -58,7 +58,7 @@ main {
     padding: 2rem 0;
     max-width: 900px;
     margin: 0 auto;
-    margin-bottom: 60px; /* Add bottom margin to prevent footer overlap */
+    margin-bottom: 60px; /* Prevent content from being hidden behind the fixed footer */
 }
 
 #filter {
@@ -85,7 +85,7 @@ main {
 }
 
 .place-card {
-    margin: 20px; /* Use consistent 20px margin */
+    margin: 20px 0; /* Consistent vertical spacing with other content sections */
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 10px;
@@ -134,9 +134,9 @@ main {
 
 .place-details {
     margin: 20px 0;
-    padding: 10px; /* Changed from 18px 24px to 10px */
-    border: 1px solid #ddd; /* Changed from #b48cff to #ddd */
-    border-radius: 10px; /* Changed from 14px to 10px */
+    padding: 10px; /* Standardized padding for consistent spacing across components */
+    border: 1px solid #ddd; /* Neutral border color for better visual hierarchy */
+    border-radius: 10px; /* Consistent border radius with other card components */
     background: #22163a;
     color: #eee;
 }
@@ -154,25 +154,25 @@ main {
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 10px;
-    background: #2d1850;
+    background: #22163a; /* Unified background color across all card components */
     color: #eee;
 }
 
 .add-review {
     margin: 20px 0;
-    padding: 10px; /* Changed from 18px 24px to 10px */
-    border: 1px solid #ddd; /* Changed from #b48cff to #ddd */
-    border-radius: 10px; /* Changed from 14px to 10px */
+    padding: 10px; /* Standardized padding for consistent spacing across components */
+    border: 1px solid #ddd; /* Neutral border color for better visual hierarchy */
+    border-radius: 10px; /* Consistent border radius with other card components */
     background: #22163a;
     color: #eee;
-    display: none; /* Initially hidden */
+    display: none; /* Hidden by default - shown via JavaScript when user is authenticated */
 }
 
 .form {
     margin: 20px 0;
-    padding: 10px; /* Changed from 18px 24px to 10px */
-    border: 1px solid #ddd; /* Changed from #b48cff to #ddd */
-    border-radius: 10px; /* Changed from 14px to 10px */
+    padding: 10px; /* Standardized padding for consistent spacing across components */
+    border: 1px solid #ddd; /* Neutral border color for better visual hierarchy */
+    border-radius: 10px; /* Consistent border radius with other card components */
     background: #22163a;
     color: #eee;
 }
@@ -185,6 +185,7 @@ input, textarea, select {
     padding: 0.5rem;
     margin-bottom: 1rem;
     width: 100%;
+    box-sizing: border-box; /* Prevent form elements from overflowing their containers */
     font-size: 1rem;
 }
 
@@ -215,6 +216,6 @@ footer {
     font-size: 1rem;
     letter-spacing: 1px;
     box-shadow: 0 -2px 8px rgba(40,0,80,0.08);
-    height: 40px; /* Define a fixed height */
-    box-sizing: border-box; /* Include padding in height calculation */
+    height: 40px; /* Fixed height ensures consistent layout calculations */
+    box-sizing: border-box; /* Include padding in total height calculation */
 }

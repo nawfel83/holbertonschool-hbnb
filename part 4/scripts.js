@@ -1,5 +1,7 @@
 /**
- * Utility function to get a cookie value by its name
+ * Extracts a cookie value by name from document.cookie
+ * @param {string} name - Cookie name to retrieve
+ * @returns {string|null} Cookie value or null if not found
  */
 function getCookie(name) {
     const value = `; ${document.cookie}`;
@@ -9,7 +11,8 @@ function getCookie(name) {
 }
 
 /**
- * Utility function to get the place ID from the URL query parameters
+ * Extracts place ID from URL search parameters
+ * @returns {string|null} Place ID from ?id= parameter
  */
 function getPlaceIdFromURL() {
     const params = new URLSearchParams(window.location.search);
@@ -17,8 +20,9 @@ function getPlaceIdFromURL() {
 }
 
 /**
- * Check user authentication for review submission
- * Redirects to index.html if not authenticated
+ * Validates user authentication for review operations
+ * Redirects to home page if user is not authenticated
+ * @returns {string|null} JWT token if authenticated
  */
 function checkAuthenticationForReview() {
     const token = getCookie('token');
@@ -29,8 +33,9 @@ function checkAuthenticationForReview() {
 }
 
 /**
- * Check user authentication for general pages
- * Shows or hides the login/logout buttons and fetches places if authenticated
+ * Updates UI based on authentication status
+ * Toggles login/logout button visibility and fetches places data
+ * @returns {string|null} JWT token if authenticated
  */
 function checkAuthentication() {
     const token = getCookie('token');
@@ -47,14 +52,17 @@ function checkAuthentication() {
         }
     }
     
-    if (token) {
+    // Fetch places data only on index page when authenticated
+    if (token && document.getElementById('places-list')) {
         fetchPlaces(token);
     }
     return token;
 }
 
 /**
- * Check authentication and show/hide review form accordingly
+ * Controls review form visibility based on authentication
+ * Shows form to authenticated users, login prompt to others
+ * @returns {string|null} JWT token if authenticated
  */
 function checkAuthenticationForReviewForm() {
     const token = getCookie('token');
@@ -63,16 +71,16 @@ function checkAuthenticationForReviewForm() {
     
     if (reviewSection) {
         if (token) {
-            // User is authenticated - show the review form
+            // Show review form for authenticated users
             reviewSection.style.display = 'block';
             if (loginMessage) {
                 loginMessage.style.display = 'none';
             }
         } else {
-            // User is not authenticated - hide the review form and show login message
+            // Hide form and show login prompt for unauthenticated users
             reviewSection.style.display = 'none';
             if (!loginMessage) {
-                // Create login message if it doesn't exist
+                // Create login prompt message
                 const messageDiv = document.createElement('div');
                 messageDiv.id = 'login-message';
                 messageDiv.className = 'add-review';
@@ -92,7 +100,8 @@ function checkAuthenticationForReviewForm() {
 }
 
 /**
- * Fetch the list of places from the API and display them
+ * Fetches places data from API and renders them
+ * @param {string} token - JWT authentication token
  */
 async function fetchPlaces(token) {
     try {
@@ -114,7 +123,8 @@ async function fetchPlaces(token) {
 }
 
 /**
- * Dynamically display the list of places in the #places-list section
+ * Renders places list in the DOM
+ * @param {Array} places - Array of place objects from API
  */
 function displayPlaces(places) {
     const placesList = document.getElementById('places-list');
@@ -136,7 +146,8 @@ function displayPlaces(places) {
 }
 
 /**
- * Filter places by price using the dropdown
+ * Initializes price filter dropdown and adds event handler
+ * Filters places by maximum price threshold
  */
 function setupPriceFilter() {
     const priceFilter = document.getElementById('price-filter');
@@ -145,7 +156,7 @@ function setupPriceFilter() {
             const opt = document.createElement('option');
             opt.value = val;
             opt.textContent = val;
-            // Set "All" as selected by default
+            // Default to "All" option
             if (val === 'All') {
                 opt.selected = true;
             }
@@ -168,7 +179,10 @@ function setupPriceFilter() {
 }
 
 /**
- * Handle login form submission
+ * Authenticates user with email/password credentials
+ * Stores JWT token in cookies and redirects on success
+ * @param {string} email - User email address
+ * @param {string} password - User password
  */
 async function loginUser(email, password) {
     const response = await fetch('http://localhost:5000/api/v1/auth/login', {
@@ -183,19 +197,21 @@ async function loginUser(email, password) {
         document.cookie = `token=${data.access_token}; path=/`;
         window.location.href = 'index.html';
     } else {
-        // Parse the error response to get the actual error message
+        // Display detailed error message from API response
         try {
             const errorData = await response.json();
             alert('Login failed: ' + (errorData.error || 'Unknown error'));
         } catch (parseError) {
-            // Fallback to statusText if JSON parsing fails
+            // Fallback to HTTP status text
             alert('Login failed: ' + response.statusText);
         }
     }
 }
 
 /**
- * Fetch and display details of a single place
+ * Fetches and displays detailed information for a specific place
+ * @param {string} token - JWT authentication token
+ * @param {string} placeId - Unique place identifier
  */
 async function fetchPlaceDetails(token, placeId) {
     try {
@@ -215,7 +231,10 @@ async function fetchPlaceDetails(token, placeId) {
 }
 
 /**
- * Fetch owner details by ID
+ * Retrieves owner's full name from user API
+ * @param {string} token - JWT authentication token
+ * @param {string} ownerId - User ID of the place owner
+ * @returns {Promise<string>} Owner's full name or 'Unknown'
  */
 async function fetchOwnerDetails(token, ownerId) {
     try {
@@ -234,7 +253,10 @@ async function fetchOwnerDetails(token, ownerId) {
 }
 
 /**
- * Fetch reviews for a specific place
+ * Fetches all reviews and filters by place ID
+ * @param {string} token - JWT authentication token
+ * @param {string} placeId - Place identifier to filter reviews
+ * @returns {Promise<Array>} Array of review objects for the place
  */
 async function fetchPlaceReviews(token, placeId) {
     try {
@@ -254,7 +276,10 @@ async function fetchPlaceReviews(token, placeId) {
 }
 
 /**
- * Fetch user details by ID to get user name for reviews
+ * Retrieves user's full name for review attribution
+ * @param {string} token - JWT authentication token
+ * @param {string} userId - User identifier
+ * @returns {Promise<string>} User's full name or 'Unknown User'
  */
 async function fetchUserDetails(token, userId) {
     try {
@@ -273,7 +298,9 @@ async function fetchUserDetails(token, userId) {
 }
 
 /**
- * Display reviews for a place
+ * Renders reviews section with user names and ratings
+ * @param {string} token - JWT authentication token
+ * @param {string} placeId - Place identifier for reviews
  */
 async function displayReviews(token, placeId) {
     const reviewsSection = document.querySelector('.reviews');
@@ -289,7 +316,7 @@ async function displayReviews(token, placeId) {
                 const reviewDiv = document.createElement('div');
                 reviewDiv.className = 'review-card';
                 reviewDiv.innerHTML = `
-                    <p>"${review.text}"</p>
+                    <p>${review.text}</p>
                     <p>User: ${userName}</p>
                     <p>Rating: ${review.rating}/5</p>
                 `;
@@ -302,12 +329,13 @@ async function displayReviews(token, placeId) {
 }
 
 /**
- * Dynamically display place details, amenities, and reviews
+ * Renders place details including owner info, amenities, and reviews
+ * @param {Object} place - Place object from API
  */
 async function displayPlaceDetails(place) {
     const detailsSection = document.querySelector('.place-details');
     if (detailsSection) {
-        // Get owner name if possible
+        // Fetch owner information for display
         const token = getCookie('token');
         const ownerName = place.owner_id ? await fetchOwnerDetails(token, place.owner_id) : 'Unknown';
         
@@ -323,14 +351,15 @@ async function displayPlaceDetails(place) {
         `;
     }
 
-    // Fetch and display reviews separately
+    // Load and display reviews for this place
     const token = getCookie('token');
     const placeId = getPlaceIdFromURL();
     await displayReviews(token, placeId);
 }
 
 /**
- * Display place info for add review page
+ * Renders place information for review submission page
+ * @param {Object} place - Place object from API
  */
 async function displayPlaceInfoForReview(place) {
     const placeInfoSection = document.getElementById('place-info');
@@ -346,7 +375,11 @@ async function displayPlaceInfoForReview(place) {
 }
 
 /**
- * Submit a review for a place
+ * Submits a new review to the API
+ * @param {string} token - JWT authentication token
+ * @param {string} placeId - Place identifier for the review
+ * @param {string} reviewText - Review content text
+ * @param {number} rating - Numeric rating (1-5)
  */
 async function submitReview(token, placeId, reviewText, rating) {
     try {
@@ -360,7 +393,7 @@ async function submitReview(token, placeId, reviewText, rating) {
                 text: reviewText,
                 rating: parseInt(rating),
                 place_id: placeId
-                // Remove user_id - it's extracted from token on backend
+                // user_id is extracted from JWT token on backend
             })
         });
         await handleReviewResponse(response);
@@ -370,13 +403,14 @@ async function submitReview(token, placeId, reviewText, rating) {
 }
 
 /**
- * Handle the response after submitting a review
+ * Processes review submission response and handles UI updates
+ * @param {Response} response - Fetch API response object
  */
 async function handleReviewResponse(response) {
     if (response.ok) {
         alert('Review submitted successfully!');
         document.getElementById('review-form').reset();
-        // Redirect back to place details page
+        // Navigate back to place details page
         const placeId = getPlaceIdFromURL();
         if (placeId) {
             window.location.href = `place.html?id=${placeId}`;
@@ -388,7 +422,7 @@ async function handleReviewResponse(response) {
 }
 
 /**
- * Logout function to clear token and refresh page
+ * Clears authentication token and refreshes the page
  */
 function logout() {
     document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT';
@@ -396,10 +430,14 @@ function logout() {
 }
 
 /**
- * DOMContentLoaded event handler for all pages
+ * Main application initialization when DOM is loaded
+ * Handles page-specific functionality and event listeners
  */
 document.addEventListener('DOMContentLoaded', () => {
-    // Login page
+    // Initialize authentication state across all pages
+    checkAuthentication();
+
+    // Login page functionality
     const loginForm = document.getElementById('login-form');
     if (loginForm) {
         loginForm.addEventListener('submit', async (event) => {
@@ -410,26 +448,25 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Index page (places list and filter)
+    // Index page: places list and price filtering
     if (document.getElementById('places-list')) {
-        checkAuthentication();
         setupPriceFilter();
         fetchPlaces(getCookie('token'));
     }
 
-    // Place details page
+    // Place details page: show place info and reviews
     if (document.querySelector('.place-details')) {
         const placeId = getPlaceIdFromURL();
         const token = getCookie('token');
         fetchPlaceDetails(token, placeId);
         
-        // Check authentication for review form visibility
+        // Control review form visibility based on auth status
         checkAuthenticationForReviewForm();
     }
 
-    // Add review page - NEW FUNCTIONALITY
+    // Add review page: authentication-protected functionality
     if (window.location.pathname.includes('add_review.html')) {
-        // Check authentication and redirect if not logged in
+        // Ensure user is authenticated, redirect if not
         const token = checkAuthenticationForReview();
         const placeId = getPlaceIdFromURL();
         
@@ -439,30 +476,27 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
-        // Fetch and display place info
+        // Load place information for context
         fetchPlaceDetails(token, placeId).then(() => {
             const placeDetailsSection = document.querySelector('.place-details');
             if (placeDetailsSection) {
-                // Move the content to place-info section
+                // Transfer content to review page layout
                 const placeInfoSection = document.getElementById('place-info');
                 if (placeInfoSection) {
                     placeInfoSection.innerHTML = placeDetailsSection.innerHTML;
                 }
             }
         });
-        
-        // Setup authentication display
-        checkAuthentication();
     }
 
-    // Add review functionality (works on both place.html and add_review.html)
+    // Review form submission (works on both place.html and add_review.html)
     const reviewForm = document.getElementById('review-form');
     if (reviewForm) {
         const placeId = getPlaceIdFromURL();
         reviewForm.addEventListener('submit', async (event) => {
             event.preventDefault();
             
-            // Double-check authentication when submitting (security measure)
+            // Security check: verify authentication at submission time
             const token = getCookie('token');
             if (!token) {
                 alert('You must be logged in to submit a review. Redirecting to login page...');
@@ -487,7 +521,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Logout functionality
+    // Logout button functionality
     const logoutButton = document.getElementById('logout-button');
     if (logoutButton) {
         logoutButton.addEventListener('click', logout);
