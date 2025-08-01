@@ -1,27 +1,18 @@
--- Ajouter au début du fichier :
--- =================================
 -- CRUD OPERATIONS TEST SCRIPT
--- =================================
-SET @test_start = NOW();
-SELECT 'Starting CRUD operations test...' as Status, @test_start as Timestamp;
 
--- Modifier l'insertion d'utilisateur :
+-- Insertion d'utilisateur de test
 INSERT INTO users (id, email, password, first_name, last_name, is_admin, created_at, updated_at)
-VALUES ('test-user-001', 'test@example.com', 'hashed_password', 'Test', 'User', FALSE, NOW(), NOW());
+VALUES ('test-user-001', 'test@example.com', 'hashed_password', 'Test', 'User', 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
--- Modifier l'insertion de lieu :
+-- Insertion de lieu de test
 INSERT INTO places (id, title, description, price, latitude, longitude, owner_id, created_at, updated_at)
-VALUES ('test-place-001', 'Test Apartment', 'A nice test apartment', 100.0, 40.7128, -74.0060, 'test-user-001', NOW(), NOW());
+VALUES ('test-place-001', 'Test Apartment', 'A nice test apartment', 100.0, 40.7128, -74.0060, 'test-user-001', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
--- Modifier l'insertion d'avis :
+-- Insertion d'avis de test
 INSERT INTO reviews (id, text, rating, user_id, place_id, created_at, updated_at)
-VALUES ('test-review-001', 'Great place!', 5, 'test-user-001', 'test-place-001', NOW(), NOW());
+VALUES ('test-review-001', 'Great place!', 5, 'test-user-001', 'test-place-001', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
--- Ajouter à la fin :
 -- Vérification finale
-SELECT 'CRUD test completed successfully!' as Status, 
-       TIMEDIFF(NOW(), @test_start) as Duration;
-
 SELECT 'Final record counts:' as Summary;
 SELECT 'Users' as Table_Name, COUNT(*) as Count FROM users
 UNION ALL

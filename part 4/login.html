@@ -6,29 +6,93 @@
     <title>HBnB - Login</title>
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <header>
-        <img src="logo.svg" alt="HBnB Logo" class="logo">
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="login.html" id="login-link" class="login-button">Login</a>
+<body class="login-body">
+    <header class="login-header-nav">
+        <div class="login-nav-content">
+            <img src="logo.svg" alt="HBnB Logo" class="login-nav-logo">
+            <h1 class="login-nav-title">HBnB</h1>
+        </div>
+        <nav class="login-nav">
+            <a href="index.html" class="home-button">
+                <span class="home-icon">🏠</span>
+                Accueil
+            </a>
         </nav>
     </header>
-    <main>
-        <form id="login-form">
-            <h2>Login</h2>
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
-            
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-            
-            <button type="submit">Login</button>
-        </form>
-    </main>
-    <footer>
-        <p>&copy; 2025 HBnB. All rights reserved.</p>
-    </footer>
+    
+    <div class="login-container">
+        <div class="login-left">
+            <div class="login-branding">
+                <img src="logo.svg" alt="HBnB Logo" class="login-logo">
+                <h1 class="login-brand-title">HBnB</h1>
+                <p class="login-tagline">Votre prochaine aventure commence ici</p>
+            </div>
+            <div class="login-features">
+                <div class="login-feature">
+                    <span class="feature-icon">🏆</span>
+                    <span>Propriétés d'exception</span>
+                </div>
+                <div class="login-feature">
+                    <span class="feature-icon">🔒</span>
+                    <span>Réservation sécurisée</span>
+                </div>
+                <div class="login-feature">
+                    <span class="feature-icon">⭐</span>
+                    <span>Service premium 24/7</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="login-right">
+            <div class="login-form-container">
+                <div class="login-header">
+                    <h2>Bienvenue</h2>
+                    <p>Connectez-vous à votre compte</p>
+                </div>
+                
+                <form id="login-form" class="modern-form">
+                    <div class="form-group">
+                        <label for="email">Adresse e-mail</label>
+                        <input type="email" id="email" name="email" required placeholder="votre@email.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Mot de passe</label>
+                        <input type="password" id="password" name="password" required placeholder="••••••••">
+                    </div>
+                    
+                    <div class="form-options">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="remember">
+                            <span class="checkmark"></span>
+                            Se souvenir de moi
+                        </label>
+                        <a href="#" class="forgot-password">Mot de passe oublié ?</a>
+                    </div>
+                    
+                    <button type="submit" class="login-button-primary">Se connecter</button>
+                    
+                    <div class="divider">
+                        <span>ou</span>
+                    </div>
+                    
+                    <button type="button" class="social-login google">
+                        <span class="social-icon">G</span>
+                        Continuer avec Google
+                    </button>
+                    
+                    <button type="button" class="social-login facebook">
+                        <span class="social-icon">f</span>
+                        Continuer avec Facebook
+                    </button>
+                </form>
+                
+                <div class="signup-prompt">
+                    <p>Pas encore de compte ? <a href="#" class="signup-link">Créer un compte</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="scripts.js"></script>
 </body>
 </html>

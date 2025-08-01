@@ -77,6 +77,8 @@ class PlaceResource(Resource):
             api.abort(403, "Unauthorized action")
         data = update_parser.parse_args()
         clean_data = {k: v for k, v in data.items() if v is not None}
+        if 'owner_id' in clean_data:
+            api.abort(400, "You cannot modify owner_id")
         if 'price' in clean_data and clean_data['price'] <= 0:
             api.abort(400, "Price must be positive")
         if 'latitude' in clean_data and not (-90 <= clean_data['latitude'] <= 90):

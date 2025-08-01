@@ -21,7 +21,7 @@ def init_database():
         admin = User(
             id=admin_id,
             email='admin@hbnb.com',
-            password='admin123',
+            password='admin1234',
             first_name='Admin',
             last_name='User'
         )

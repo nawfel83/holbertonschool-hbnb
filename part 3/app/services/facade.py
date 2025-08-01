@@ -1,3 +1,4 @@
+from app.repositories.user_repository import UserRepository
 from app.persistence.repository import SQLAlchemyRepository
 from app.models.user import User
 from app.models.place import Place
@@ -6,13 +7,16 @@ from app.models.amenity import Amenity
 
 class HBnBFacade:
     def __init__(self):
-        self.user_repo = SQLAlchemyRepository(User)
+        self.user_repo = UserRepository()
         self.place_repo = SQLAlchemyRepository(Place)
         self.review_repo = SQLAlchemyRepository(Review)
         self.amenity_repo = SQLAlchemyRepository(Amenity)
 
     # USER METHODS
     def create_user(self, data):
+        # Vérifie unicité de l'email
+        if self.user_repo.get_user_by_email(data['email']):
+            raise ValueError("Email already exists")
         user = User(
             email=data['email'],
             password=data['password'],
@@ -29,29 +33,29 @@ class HBnBFacade:
         return self.user_repo.get_all()
 
     def update_user(self, user_id, data):
+        # Si email dans data, vérifie unicité
+        if 'email' in data:
+            existing = self.user_repo.get_user_by_email(data['email'])
+            if existing and existing.id != user_id:
+                raise ValueError("Email already exists")
         return self.user_repo.update(user_id, data)
 
+    def delete_user(self, user_id):
+        return self.user_repo.delete(user_id)
+
     def get_user_by_email(self, email):
-        return self.user_repo.get_by_attribute('email', email)
+        return self.user_repo.get_user_by_email(email)
 
     # PLACE METHODS
     def create_place(self, place_data):
-        """Créer un nouveau lieu"""
-
-
-        # Valider que le propriétaire existe
         owner = self.user_repo.get(place_data['owner_id'])
         if not owner:
             raise ValueError("Owner not found")
-
-        # Valider que toutes les amenities existent
         if 'amenities' in place_data and place_data['amenities']:
             for amenity_id in place_data['amenities']:
                 amenity = self.amenity_repo.get(amenity_id)
                 if not amenity:
                     raise ValueError(f"Amenity {amenity_id} not found")
-
-        # Le reste du code existant...
         place = Place(
             title=place_data['title'],
             description=place_data['description'],
@@ -61,7 +65,6 @@ class HBnBFacade:
             owner_id=place_data['owner_id'],
             amenities=place_data.get('amenities', [])
         )
-
         return self.place_repo.add(place)
 
     def get_place(self, place_id):
@@ -72,6 +75,9 @@ class HBnBFacade:
 
     def update_place(self, place_id, data):
         return self.place_repo.update(place_id, data)
+
+    def delete_place(self, place_id):
+        return self.place_repo.delete(place_id)
 
     # REVIEW METHODS
     def create_review(self, data):
@@ -113,13 +119,8 @@ class HBnBFacade:
         return self.amenity_repo.update(amenity_id, data)
 
     def delete_amenity(self, amenity_id):
-        """Supprimer une amenity par son ID"""
-        try:
-            amenity = self.amenity_repo.get(amenity_id)
-            if not amenity:
-                return False
-        
-            self.amenity_repo.delete(amenity_id)
-            return True
-        except Exception:
+        amenity = self.amenity_repo.get(amenity_id)
+        if not amenity:
             return False
+        self.amenity_repo.delete(amenity_id)
+        return True
