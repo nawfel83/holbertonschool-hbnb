@@ -91,14 +91,14 @@ def test_crud_operations():
         print(f"✓ Total équipements: {Amenity.query.count()}")
         
         # Test 8: Nettoyage (optionnel)
-        print("\n8. Nettoyage des données de test...")
-        db.session.delete(review)
-        db.session.delete(place)
-        db.session.delete(user)
-        db.session.delete(wifi)
-        db.session.delete(parking)
-        db.session.commit()
-        print("✓ Données de test supprimées")
+        # print("\n8. Nettoyage des données de test...")
+        # db.session.delete(review)
+        # db.session.delete(place)
+        # db.session.delete(user)
+        # db.session.delete(wifi)
+        # db.session.delete(parking)
+        # db.session.commit()
+        # print("✓ Données de test supprimées")
         
         print("\n=== Tous les tests sont passés avec succès! ===")
 

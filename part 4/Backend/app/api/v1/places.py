@@ -1,0 +1,121 @@
+from flask_restx import Namespace, Resource, fields, reqparse
+from app.services.facade import HBnBFacade
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask import request
+
+facade = HBnBFacade()
+api = Namespace('places', description='Places management')
+
+place_model = api.model('Place', {
+    'id': fields.String(readOnly=True, description='Place ID'),
+    'title': fields.String(required=True, description='Title of the place'),
+    'description': fields.String(required=True, description='Description of the place'),
+    'price': fields.Float(required=True, description='Price per night'),
+    'latitude': fields.Float(required=True, description='Latitude'),
+    'longitude': fields.Float(required=True, description='Longitude'),
+    'owner_id': fields.String(required=True, description='Owner user ID'),
+    'amenities': fields.List(fields.String, description='List of amenity IDs'),
+})
+
+update_parser = reqparse.RequestParser()
+update_parser.add_argument('title', type=str)
+update_parser.add_argument('description', type=str)
+update_parser.add_argument('price', type=float)
+update_parser.add_argument('latitude', type=float)
+update_parser.add_argument('longitude', type=float)
+update_parser.add_argument('amenities', type=str, action='append')
+
+@api.route('/')
+class PlaceList(Resource):
+    @api.marshal_list_with(place_model)
+    @api.response(200, 'Success')
+    def get(self):
+        """Return all places"""
+        places = []
+        for place in facade.get_all_places():
+            places.append({
+                'id': place.id,
+                'price': str(place.price),
+                'description': place.description,
+                'title': place.title,
+                'latitude': place.latitude,
+                'longitude': place.longitude
+                })
+        return places, 200
+
+
+    @api.expect(place_model, validate=True)
+    @api.marshal_with(place_model, code=201)
+    @jwt_required()
+    def post(self):
+        """Create a new place"""
+        try:
+            data = api.payload
+            current_user = get_jwt_identity()
+            data['owner_id'] = current_user['id']
+            
+            if data.get('price', 0) <= 0:
+                api.abort(400, "Price must be positive")
+            if not (-90 <= data.get('latitude', 0) <= 90):
+                api.abort(400, "Latitude must be between -90 and 90")
+            if not (-180 <= data.get('longitude', 0) <= 180):
+                api.abort(400, "Longitude must be between -180 and 180")
+            
+            owner = facade.get_user(data['owner_id'])
+            if not owner:
+                api.abort(400, "The specified owner does not exist")
+            
+            place = facade.create_place(data)
+            return vars(place), 201
+        except Exception as e:
+            api.abort(500, f"Internal server error: {str(e)}")
+
+    def options(self):
+        """Handle preflight request"""
+        return {}, 200
+
+@api.route('/<string:place_id>')
+@api.param('place_id', 'Place identifier')
+class PlaceResource(Resource):
+    @api.marshal_with(place_model)
+    def get(self, place_id):
+        """Return a specific place"""
+        try:
+            place = facade.get_place(place_id)
+            if not place:
+                api.abort(404, "Place not found")
+            return vars(place), 200
+        except Exception as e:
+            api.abort(500, f"Internal server error: {str(e)}")
+
+    @api.expect(update_parser)
+    @api.marshal_with(place_model)
+    @jwt_required()
+    def put(self, place_id):
+        """Update an existing place"""
+        try:
+            current_user = get_jwt_identity()
+            place = facade.get_place(place_id)
+            if not place:
+                api.abort(404, "Place not found")
+            if place.owner_id != current_user['id']:
+                api.abort(403, "Unauthorized action")
+            
+            data = update_parser.parse_args()
+            clean_data = {k: v for k, v in data.items() if v is not None}
+            
+            if 'price' in clean_data and clean_data['price'] <= 0:
+                api.abort(400, "Price must be positive")
+            if 'latitude' in clean_data and not (-90 <= clean_data['latitude'] <= 90):
+                api.abort(400, "Latitude must be between -90 and 90")
+            if 'longitude' in clean_data and not (-180 <= clean_data['longitude'] <= 180):
+                api.abort(400, "Longitude must be between -180 and 180")
+                
+            place = facade.update_place(place_id, clean_data)
+            return vars(place), 200
+        except Exception as e:
+            api.abort(500, f"Internal server error: {str(e)}")
+
+    def options(self, place_id):
+        """Handle preflight request"""
+        return {}, 200

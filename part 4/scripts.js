@@ -77,9 +77,9 @@ function displayPlaces(places) {
         placeDiv.className = 'place-card';
         placeDiv.setAttribute('data-price', place.price);
         placeDiv.innerHTML = `
-            <h3>${place.name}</h3>
+            <h3>${place.title}</h3>
             <p>${place.description}</p>
-            <p>Location: ${place.location}</p>
+            <p>Location: ${place.latitude}, ${place.longitude}</p>
             <p>Price: ${place.price} €</p>
             <a href="place.html?id=${place.id}" class="details-button">View Details</a>
         `;
@@ -160,18 +160,42 @@ async function fetchPlaceDetails(token, placeId) {
 }
 
 /**
+ * Fetch owner details by ID
+ */
+async function fetchOwnerDetails(token, ownerId) {
+    try {
+        const response = await fetch(`http://localhost:5000/api/v1/users/${ownerId}`, {
+            method: 'GET',
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        });
+        if (response.ok) {
+            const owner = await response.json();
+            return `${owner.first_name} ${owner.last_name}`;
+        }
+    } catch (error) {
+        console.error('Error fetching owner details:', error);
+    }
+    return 'Unknown';
+}
+
+/**
  * Dynamically display place details, amenities, and reviews
  */
-function displayPlaceDetails(place) {
+async function displayPlaceDetails(place) {
     const detailsSection = document.querySelector('.place-details');
     if (detailsSection) {
+        // Get owner name if possible
+        const token = getCookie('token');
+        const ownerName = place.owner_id ? await fetchOwnerDetails(token, place.owner_id) : 'Unknown';
+        
         detailsSection.innerHTML = `
-            <h2>${place.name}</h2>
+            <h2>${place.title}</h2>
             <div class="place-info">
-                <p>Host: ${place.owner_name}</p>
+                <p>Host: ${ownerName}</p>
                 <p>Price per night: ${place.price} €</p>
                 <p>Description: ${place.description}</p>
-                <p>Amenities: ${place.amenities.join(', ')}</p>
+                <p>Location: ${place.latitude}, ${place.longitude}</p>
+                <p>Amenities: ${place.amenities ? place.amenities.join(', ') : 'None'}</p>
             </div>
         `;
     }
@@ -251,6 +275,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('places-list')) {
         checkAuthentication();
         setupPriceFilter();
+        fetchPlaces(getCookie('token'))
+        console.log('ok');
     }
 
     // Place details page
@@ -258,15 +284,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const placeId = getPlaceIdFromURL();
         const token = getCookie('token');
         fetchPlaceDetails(token, placeId);
+        console.log('fetched');
     }
 
-    // Add review page
+    // Add review functionality
     const reviewForm = document.getElementById('review-form');
     if (reviewForm) {
-        const token = checkAuthenticationForReview();
         const placeId = getPlaceIdFromURL();
         reviewForm.addEventListener('submit', async (event) => {
             event.preventDefault();
+            
+            // Vérifier l'authentification seulement lors de la soumission
+            const token = getCookie('token');
+            if (!token) {
+                alert('You must be logged in to submit a review. Redirecting to login page...');
+                window.location.href = 'login.html';
+                return;
+            }
+            
             const reviewText = document.getElementById('review').value;
             const rating = document.getElementById('rating').value;
             await submitReview(token, placeId, reviewText, rating);
