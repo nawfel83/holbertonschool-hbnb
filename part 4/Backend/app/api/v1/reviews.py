@@ -9,7 +9,7 @@ review_model = api.model('Review', {
     'id': fields.String(readOnly=True, description='Unique review ID'),
     'text': fields.String(required=True, description='Review content'),
     'rating': fields.Integer(required=True, description='Rating (1-5)'),
-    'user_id': fields.String(required=True, description='ID of the user'),
+    'user_id': fields.String(readOnly=True, description='ID of the user'),  # Changed to readOnly
     'place_id': fields.String(required=True, description='ID of the place')
 })
 

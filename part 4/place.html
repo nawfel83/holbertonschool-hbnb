@@ -11,53 +11,34 @@
         <img src="/images/logo.png" alt="Logo" class="logo">
         <nav>
             <a href="index.html">Home</a>
-            <a href="login.html" class="login-button">Login</a>
+            <a href="login.html" id="login-link" class="login-button">Login</a>
+            <button id="logout-button" class="login-button" style="display: none;">Logout</button>
         </nav>
     </header>
     <main>
         <section class="place-details">
-            <!-- Place details will be populated dynamically -->
-            <h2>Logement entier : appartement - Dubaï, Émirats arabes unis</h2>
-            <img src="images/purple_loft.jpg" alt="Purple Loft" class="place-photo" style="width:100%;max-width:400px;border-radius:10px;margin:16px 0;">
-            <div class="place-info">
-                <p></strong>Host:</strong> Neymar</p>
-                <p></strong>Price per night:</strong>$100</p>
-                <p></strong>Description:</strong> Beautiful apartment in the city center.</p>
-                <p></strong>Amenities:</strong> Wifi, Kitchen, Parking</p>
-            </div>
-            
-            </div>
-            <div class="place-info">
-                <h2>Villa de 3 chambres adaptée aux familles !</h2>
-                <img src="images/villa_familiale.jpg" alt="Villa Familiale" class="place-photo" style="width:100%;max-width:400px;border-radius:10px;margin:16px 0;">
-                <p><strong>Host:</strong> Cristiano Ronado</p>
-                <p><strong>Price per night:</strong> 10€</p>
-                <p><strong>Description:</strong> Secluded cabin in the woods to be one with nature.</p>
-                <p><strong>Amenities:</strong> Mosquito spray, Can opener, Picnic table.</p>
-            </div>
-            <div class="place-info">
-                <h2>Penthouss Burj-Kalipha</h2>
-                <img src="images/penthouss.jpg" alt="Penthouss" class="place-photo" style="width:100%;max-width:400px;border-radius:10px;margin:16px 0;">
-                <p><strong>Host:</strong> Ben-arfa</p>
-                <p><strong>Price per night:</strong> 50€</p>
-                <p><strong>Description:</strong> Beautiful villa by the seaside.</p>
-                <p><strong>Amenities:</strong> Minibar, Swimming pool, Sauna.</p>
-            </div>
+            <!-- Place details will be populated dynamically by JavaScript -->
         </section>
         
         <section class="reviews">
-            <!-- Reviews will be populated dynamically -->
-           <div class="review-card">
-                <p>"Great place!"</p>
-                <p>User: Alice</p>
-                <p>Rating: 5/5</p>
-            </div> 
+            <!-- Reviews will be populated dynamically by JavaScript -->
         </section>
+        
         <section class="add-review">
             <h2>Add a Review</h2>
             <form id="review-form">
                 <label for="review-text">Review:</label>
                 <textarea id="review-text" name="review-text" required></textarea>
+                
+                <label for="rating">Rating:</label>
+                <select id="rating" name="rating" required>
+                    <option value="">Select a rating</option>
+                    <option value="1">1/5</option>
+                    <option value="2">2/5</option>
+                    <option value="3">3/5</option>
+                    <option value="4">4/5</option>
+                    <option value="5">5/5</option>
+                </select>
                 
                 <button type="submit">Submit</button>
             </form>

@@ -64,8 +64,93 @@ def init_database():
                 amenity = Amenity(name=amenity_name)
                 db.session.add(amenity)
         
+        # Créer 5 places de test avec des noms originaux
+        print("\nCréation de 5 places de test avec des noms originaux...")
+        
+        # Récupérer les équipements pour les associer aux places
+        wifi = Amenity.query.filter_by(name='WiFi').first()
+        parking = Amenity.query.filter_by(name='Parking').first()
+        pool = Amenity.query.filter_by(name='Pool').first()
+        kitchen = Amenity.query.filter_by(name='Kitchen').first()
+        gym = Amenity.query.filter_by(name='Gym').first()
+        
+        # Utiliser l'admin comme propriétaire par défaut
+        owner = existing_admin if existing_admin else admin
+        
+        test_places = [
+            {
+                'title': 'Annonce 1',
+                'description': 'test test description test',
+                'price': 89.99,
+                'latitude': 45.764043,
+                'longitude': 4.835659,
+                'amenities': [wifi, kitchen] if wifi and kitchen else []
+            },
+            {
+                'title': 'Annonce 2',
+                'description': 'test test description test',
+                'price': 49.00,
+                'latitude': 43.604652,
+                'longitude': 1.444209,
+                'amenities': [wifi, parking, pool] if all([wifi, parking, pool]) else []
+            },
+            {
+                'title': 'Annonce 3',
+                'description': 'test test description test',
+                'price': 9.00,
+                'latitude': 48.856614,
+                'longitude': 2.352222,
+                'amenities': [wifi, parking, pool, gym] if all([wifi, parking, pool, gym]) else []
+            },
+            {
+                'title': 'Annonce 4',
+                'description': 'test test description test',
+                'price': 51.00,
+                'latitude': -17.686995,
+                'longitude': -149.426956,
+                'amenities': [wifi, kitchen, pool] if all([wifi, kitchen, pool]) else []
+            },
+            {
+                'title': 'Annonce 5',
+                'description': 'test test description test',
+                'price': 175.25,
+                'latitude': 51.507351,
+                'longitude': -0.127758,
+                'amenities': [wifi, parking, gym, kitchen] if all([wifi, parking, gym, kitchen]) else []
+            }
+        ]
+        
+        created_places = []
+        for place_data in test_places:
+            # Vérifier si la place existe déjà
+            existing_place = Place.query.filter_by(title=place_data['title']).first()
+            if not existing_place:
+                new_place = Place(
+                    title=place_data['title'],
+                    description=place_data['description'],
+                    price=place_data['price'],
+                    latitude=place_data['latitude'],
+                    longitude=place_data['longitude'],
+                    owner_id=owner.id
+                )
+                # Associer les équipements
+                for amenity in place_data['amenities']:
+                    if amenity:
+                        new_place.amenities.append(amenity)
+                
+                db.session.add(new_place)
+                created_places.append(new_place)
+            else:
+                print(f"Place '{place_data['title']}' existe déjà!")
+        
         # Sauvegarder les changements
         db.session.commit()
+        
+        # Afficher les places créées
+        for i, place in enumerate(created_places):
+            print(f"✓ Place {i+1}: '{place.title}' créée (ID: {place.id})")
+            print(f"  Prix: {place.price}€ - Équipements: {place.amenities.count()}")
+        
         print("Données initiales insérées avec succès!")
         
         # Afficher un résumé
