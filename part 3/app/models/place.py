@@ -1,23 +1,75 @@
-from app.models.review import Review
+from app import db
+from app.models.base_model import BaseModel
+from app.models.associations import place_amenity
 
-# models/place.py - Updated Place model
-class Place:
-    def __init__(self, id, title, description, price, latitude, longitude, owner_id, amenities=None):
-        self.id = id
-        self.title = title
-        self.description = description
-        self.price = self._validate_price(price)
-        self.latitude = self._validate_latitude(latitude)
-        self.longitude = self._validate_longitude(longitude)
-        self.owner_id = owner_id
-        self.amenities = amenities or []
-        self.reviews = []  # List of reviews for this place
+
+class Place(BaseModel):
+    __tablename__ = 'places'
+
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text)
+    price = db.Column(db.Numeric(10, 2), nullable=False)
+    latitude = db.Column(db.Float, nullable=False)
+    longitude = db.Column(db.Float, nullable=False)
+    owner_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
+
+    # Relationships
+    reviews = db.relationship('Review', backref='place', lazy=True, cascade='all, delete-orphan')
+    amenities = db.relationship('Amenity', secondary=place_amenity, lazy='subquery',
+                              backref=db.backref('places', lazy=True))
 
     def _validate_price(self, price):
         """Validate that the price is positive"""
-        if price < 0:
+        if float(price) < 0:
             raise ValueError("Price must be positive")
         return price
+
+    def _validate_latitude(self, latitude):
+        """Validate that the latitude is within valid range"""
+        if not (-90.0 <= float(latitude) <= 90.0):
+            raise ValueError("Latitude must be between -90 and 90")
+        return latitude
+
+    def _validate_longitude(self, longitude):
+        """Validate that the longitude is within valid range"""
+        if not (-180.0 <= float(longitude) <= 180.0):
+            raise ValueError("Longitude must be between -180 and 180")
+        return longitude
+
+    def update(self, data):
+        """Update place data with validation."""
+        for key, value in data.items():
+            if key == 'price':
+                value = self._validate_price(value)
+            elif key == 'latitude':
+                value = self._validate_latitude(value)
+            elif key == 'longitude':
+                value = self._validate_longitude(value)
+            elif key == 'amenities':
+                continue  # Handle amenities separately
+            
+            if hasattr(self, key):
+                setattr(self, key, value)
+        
+        super().update({})
+
+    def add_amenity(self, amenity):
+        """Add an amenity to this place."""
+        if amenity not in self.amenities:
+            self.amenities.append(amenity)
+
+    def remove_amenity(self, amenity):
+        """Remove an amenity from this place."""
+        if amenity in self.amenities:
+            self.amenities.remove(amenity)
+
+    def to_dict(self):
+        """Convert to dictionary including relationships."""
+        result = super().to_dict()
+        result['amenities'] = [amenity.to_dict() for amenity in self.amenities]
+        result['reviews'] = [review.to_dict() for review in self.reviews]
+        result['price'] = float(result['price']) if result.get('price') else 0.0
+        return result
 
     def _validate_latitude(self, latitude):
         """Validate that latitude is between -90 and 90"""

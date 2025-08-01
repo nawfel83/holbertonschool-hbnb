@@ -1,8 +1,8 @@
-class Amenity:
-    def __init__(self, id, name):
-        self.id = id
-        self.name = name
+from app import db
+from app.models.base_model import BaseModel
 
-    def update(self, data):
-        for key, value in data.items():
-            setattr(self, key, value)
+
+class Amenity(BaseModel):
+    __tablename__ = 'amenities'
+
+    name = db.Column(db.String(50), nullable=False)

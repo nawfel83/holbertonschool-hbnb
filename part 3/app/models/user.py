@@ -1,13 +1,19 @@
-from app import bcrypt
+from app import db, bcrypt
+from app.models.base_model import BaseModel
 
-class User:
-    def __init__(self, id, email, password, first_name, last_name):
-        self.id = id
-        self.email = email
-        self.password = None
-        self.hash_password(password)
-        self.first_name = first_name
-        self.last_name = last_name
+
+class User(BaseModel):
+    __tablename__ = 'users'
+
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name = db.Column(db.String(50), nullable=False)
+    password = db.Column(db.String(128), nullable=False)
+    is_admin = db.Column(db.Boolean, default=False)
+
+    # Relationships
+    places = db.relationship('Place', backref='owner', lazy=True, cascade='all, delete-orphan')
+    reviews = db.relationship('Review', backref='user', lazy=True, cascade='all, delete-orphan')
 
     def hash_password(self, password):
         """Hashes the password before storing it."""
@@ -18,7 +24,17 @@ class User:
         return bcrypt.check_password_hash(self.password, password)
 
     def update(self, data):
+        """Update user data, handling password specially."""
         for key, value in data.items():
-            # Never allow direct password update here
-            if key not in ['password']:
+            if key == 'password':
+                self.hash_password(value)
+            elif hasattr(self, key):
                 setattr(self, key, value)
+        super().update({})
+
+    def to_dict(self):
+        """Convert to dictionary, excluding password."""
+        result = super().to_dict()
+        if 'password' in result:
+            del result['password']
+        return result
