@@ -1,0 +1,186 @@
+/* Modern violet & black theme for HBNB project */
+
+body {
+    background: #181028;
+    color: #eee;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background: #2d1850;
+    color: #fff;
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 8px rgba(40,0,80,0.08);
+}
+
+.logo {
+    height: 48px;
+    margin-right: 1rem;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+}
+
+nav a {
+    color: #b48cff;
+    text-decoration: none;
+    margin-left: 1.5rem;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+nav a:hover, .login-button:hover {
+    color: #fff;
+}
+
+.login-button {
+    background: linear-gradient(90deg, #7c3aed 60%, #2d1850 100%);
+    color: #fff;
+    padding: 0.5rem 1.2rem;
+    border-radius: 6px;
+    text-decoration: none;
+    margin-left: 2rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+main {
+    padding: 2rem 0;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+#filter {
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+#price-filter {
+    background: #2d1850;
+    color: #b48cff;
+    border: 1px solid #b48cff;
+    border-radius: 6px;
+    padding: 0.5rem;
+    font-size: 1rem;
+}
+
+.place-card {
+    margin: 20px 0;
+    padding: 18px 24px;
+    border: 1px solid #b48cff;
+    border-radius: 14px;
+    background: #22163a;
+    box-shadow: 0 2px 8px rgba(124,58,237,0.08);
+    color: #eee;
+    transition: box-shadow 0.2s;
+}
+
+.place-card h3 {
+    color: #b48cff;
+    margin-bottom: 0.5rem;
+}
+
+.details-button {
+    background: #7c3aed;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 0.4rem 1rem;
+    margin-top: 1rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.details-button:hover {
+    background: #b48cff;
+    color: #181028;
+}
+
+.place-details {
+    margin: 20px 0;
+    padding: 18px 24px;
+    border: 1px solid #b48cff;
+    border-radius: 14px;
+    background: #22163a;
+    color: #eee;
+}
+
+.place-info p {
+    margin: 0.5rem 0;
+}
+
+.reviews {
+    margin: 20px 0;
+}
+
+.review-card {
+    margin: 20px 0;
+    padding: 12px 18px;
+    border: 1px solid #b48cff;
+    border-radius: 10px;
+    background: #2d1850;
+    color: #eee;
+}
+
+.add-review, .form {
+    margin: 20px 0;
+    padding: 18px 24px;
+    border: 1px solid #b48cff;
+    border-radius: 14px;
+    background: #22163a;
+    color: #eee;
+}
+
+input, textarea, select {
+    background: #2d1850;
+    color: #b48cff;
+    border: 1px solid #b48cff;
+    border-radius: 6px;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    width: 100%;
+    font-size: 1rem;
+}
+
+button[type="submit"] {
+    background: #7c3aed;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 0.6rem 1.4rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+button[type="submit"]:hover {
+    background: #b48cff;
+    color: #181028;
+}
+
+footer {
+    background: #2d1850;
+    color: #b48cff;
+    text-align: center;
+    padding: 1rem;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    box-shadow: 0 -2px 8px rgba(40,0,80,0.08);
+}
