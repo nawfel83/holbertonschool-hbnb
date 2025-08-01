@@ -24,13 +24,27 @@ update_parser.add_argument('latitude', type=float)
 update_parser.add_argument('longitude', type=float)
 update_parser.add_argument('amenities', type=str, action='append')
 
+def serialize_place(place):
+    """Helper function to properly serialize a place object"""
+    place_data = vars(place).copy()
+    # Remove SQLAlchemy internal attributes
+    place_data.pop('_sa_instance_state', None)
+    
+    # Convert amenities relationship to list of IDs
+    if hasattr(place, 'amenities') and place.amenities:
+        place_data['amenities'] = [amenity.id for amenity in place.amenities]
+    else:
+        place_data['amenities'] = []
+    
+    return place_data
+
 @api.route('/')
 class PlaceList(Resource):
     @api.marshal_list_with(place_model)
     def get(self):
         """Return all places"""
         places = facade.get_all_places()
-        return [vars(place) for place in places]
+        return [serialize_place(place) for place in places]
 
     @api.expect(place_model, validate=True)
     @api.marshal_with(place_model, code=201)
@@ -50,7 +64,7 @@ class PlaceList(Resource):
         if not owner:
             api.abort(400, "The specified owner does not exist")
         place = facade.create_place(data)
-        return vars(place), 201
+        return serialize_place(place), 201
 
 @api.route('/<string:place_id>')
 @api.param('place_id', 'Place identifier')
@@ -61,7 +75,7 @@ class PlaceResource(Resource):
         place = facade.get_place(place_id)
         if not place:
             api.abort(404, "Place not found")
-        return vars(place)
+        return serialize_place(place)
 
     @api.expect(update_parser)
     @api.marshal_with(place_model)
@@ -86,4 +100,4 @@ class PlaceResource(Resource):
         if 'longitude' in clean_data and not (-180 <= clean_data['longitude'] <= 180):
             api.abort(400, "Longitude must be between -180 and 180")
         place = facade.update_place(place_id, clean_data)
-        return vars(place)
+        return serialize_place(place)

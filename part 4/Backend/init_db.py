@@ -74,8 +74,9 @@ def init_database():
         kitchen = Amenity.query.filter_by(name='Kitchen').first()
         gym = Amenity.query.filter_by(name='Gym').first()
         
-        # Utiliser l'admin comme propriétaire par défaut
-        owner = existing_admin if existing_admin else admin
+        # Utiliser Jane comme propriétaire par défaut
+        owner = existing_jane if existing_jane else jane
+        admin_owner = existing_admin if existing_admin else admin
         
         test_places = [
             {
@@ -84,7 +85,8 @@ def init_database():
                 'price': 89.99,
                 'latitude': 45.764043,
                 'longitude': 4.835659,
-                'amenities': [wifi, kitchen] if wifi and kitchen else []
+                'amenities': [wifi, kitchen] if wifi and kitchen else [],
+                'owner': owner  # Jane
             },
             {
                 'title': 'Annonce 2',
@@ -92,7 +94,8 @@ def init_database():
                 'price': 49.00,
                 'latitude': 43.604652,
                 'longitude': 1.444209,
-                'amenities': [wifi, parking, pool] if all([wifi, parking, pool]) else []
+                'amenities': [wifi, parking, pool] if all([wifi, parking, pool]) else [],
+                'owner': admin_owner  # Admin
             },
             {
                 'title': 'Annonce 3',
@@ -100,7 +103,8 @@ def init_database():
                 'price': 9.00,
                 'latitude': 48.856614,
                 'longitude': 2.352222,
-                'amenities': [wifi, parking, pool, gym] if all([wifi, parking, pool, gym]) else []
+                'amenities': [wifi, parking, pool, gym] if all([wifi, parking, pool, gym]) else [],
+                'owner': owner  # Jane
             },
             {
                 'title': 'Annonce 4',
@@ -108,7 +112,8 @@ def init_database():
                 'price': 51.00,
                 'latitude': -17.686995,
                 'longitude': -149.426956,
-                'amenities': [wifi, kitchen, pool] if all([wifi, kitchen, pool]) else []
+                'amenities': [wifi, kitchen, pool] if all([wifi, kitchen, pool]) else [],
+                'owner': owner  # Jane
             },
             {
                 'title': 'Annonce 5',
@@ -116,7 +121,8 @@ def init_database():
                 'price': 175.25,
                 'latitude': 51.507351,
                 'longitude': -0.127758,
-                'amenities': [wifi, parking, gym, kitchen] if all([wifi, parking, gym, kitchen]) else []
+                'amenities': [wifi, parking, gym, kitchen] if all([wifi, parking, gym, kitchen]) else [],
+                'owner': owner  # Jane
             }
         ]
         
@@ -131,7 +137,7 @@ def init_database():
                     price=place_data['price'],
                     latitude=place_data['latitude'],
                     longitude=place_data['longitude'],
-                    owner_id=owner.id
+                    owner_id=place_data['owner'].id  # Utiliser le propriétaire spécifique
                 )
                 # Associer les équipements
                 for amenity in place_data['amenities']:

@@ -129,18 +129,35 @@ async function fetchPlaces(token) {
 function displayPlaces(places) {
     const placesList = document.getElementById('places-list');
     placesList.innerHTML = '';
-    places.forEach(place => {
+    places.forEach(async (place) => {
         const placeDiv = document.createElement('div');
         placeDiv.className = 'place-card';
         placeDiv.setAttribute('data-price', place.price);
+        
+        // Fetch amenities for place list display
+        const token = getCookie('token');
+        let amenitiesDisplay = 'None';
+        
+        // Enhanced amenities handling
+        if (place.amenities && Array.isArray(place.amenities) && place.amenities.length > 0) {
+            const amenityNames = await fetchAmenitiesNames(token, place.amenities);
+            if (amenityNames.length > 0) {
+                amenitiesDisplay = amenityNames.slice(0, 3).join(', ');
+                if (amenityNames.length > 3) {
+                    amenitiesDisplay += ` (+${amenityNames.length - 3} more)`;
+                }
+            }
+        }
+        
         placeDiv.innerHTML = `
-    <img src="/images/appart.jpg" alt="${place.title}" class="place-image">
-    <h3>${place.title}</h3>
-    <p>${place.description}</p>
-    <p>Location: ${place.latitude}, ${place.longitude}</p>
-    <p>Price: ${place.price} €</p>
-    <a href="place.html?id=${place.id}" class="details-button">View Details</a>
-`;
+            <img src="/images/appart.jpg" alt="${place.title}" class="place-image">
+            <h3>${place.title}</h3>
+            <p>${place.description}</p>
+            <p>Location: ${place.latitude}, ${place.longitude}</p>
+            <p>Price: ${place.price} €</p>
+            <p>Amenities: ${amenitiesDisplay}</p>
+            <a href="place.html?id=${place.id}" class="details-button">View Details</a>
+        `;
         placesList.appendChild(placeDiv);
     });
 }
@@ -298,6 +315,61 @@ async function fetchUserDetails(token, userId) {
 }
 
 /**
+ * Fetches amenity details by ID
+ * @param {string} token - JWT authentication token
+ * @param {string} amenityId - Amenity identifier
+ * @returns {Promise<string>} Amenity name or 'Unknown'
+ */
+async function fetchAmenityDetails(token, amenityId) {
+    try {
+        const response = await fetch(`http://localhost:5000/api/v1/amenities/${amenityId}`, {
+            method: 'GET',
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        });
+        if (response.ok) {
+            const amenity = await response.json();
+            return amenity.name || 'Unknown';
+        } else {
+            console.error(`Failed to fetch amenity ${amenityId}:`, response.status);
+        }
+    } catch (error) {
+        console.error('Error fetching amenity details:', error);
+    }
+    return 'Unknown';
+}
+
+/**
+ * Fetches names for a list of amenity IDs
+ * @param {string} token - JWT authentication token
+ * @param {Array} amenityIds - Array of amenity IDs
+ * @returns {Promise<Array>} Array of amenity names
+ */
+async function fetchAmenitiesNames(token, amenityIds) {
+    // Handle null, undefined, empty array, or non-array cases
+    if (!amenityIds || !Array.isArray(amenityIds) || amenityIds.length === 0) {
+        return [];
+    }
+    
+    console.log('Fetching amenities for IDs:', amenityIds); // Debug log
+    
+    try {
+        const amenityNames = await Promise.all(
+            amenityIds.map(id => fetchAmenityDetails(token, id))
+        );
+        
+        console.log('Retrieved amenity names:', amenityNames); // Debug log
+        
+        // Filter out 'Unknown' amenities to avoid displaying them
+        const validAmenities = amenityNames.filter(name => name !== 'Unknown' && name !== null);
+        
+        return validAmenities;
+    } catch (error) {
+        console.error('Error fetching amenities names:', error);
+        return [];
+    }
+}
+
+/**
  * Renders reviews section with user names and ratings
  * @param {string} token - JWT authentication token
  * @param {string} placeId - Place identifier for reviews
@@ -339,14 +411,29 @@ async function displayPlaceDetails(place) {
         const token = getCookie('token');
         const ownerName = place.owner_id ? await fetchOwnerDetails(token, place.owner_id) : 'Unknown';
         
+        console.log('Place object:', place); // Debug log
+        console.log('Place amenities:', place.amenities); // Debug log
+        
+        // Enhanced amenities handling
+        let amenitiesDisplay = 'None';
+        
+        if (place.amenities && Array.isArray(place.amenities) && place.amenities.length > 0) {
+            const amenityNames = await fetchAmenitiesNames(token, place.amenities);
+            amenitiesDisplay = amenityNames.length > 0 ? amenityNames.join(', ') : 'None';
+        } else if (place.amenities && !Array.isArray(place.amenities)) {
+            console.warn('Amenities is not an array:', place.amenities);
+            amenitiesDisplay = 'Invalid amenities format';
+        }
+        
         detailsSection.innerHTML = `
+            <img src="/images/appart.jpg" alt="${place.title}" class="place-image">
             <h2>${place.title}</h2>
             <div class="place-info">
                 <p>Host: ${ownerName}</p>
                 <p>Price per night: ${place.price} €</p>
                 <p>Description: ${place.description}</p>
                 <p>Location: ${place.latitude}, ${place.longitude}</p>
-                <p>Amenities: ${place.amenities ? place.amenities.join(', ') : 'None'}</p>
+                <p>Amenities: ${amenitiesDisplay}</p>
             </div>
         `;
     }
@@ -416,8 +503,15 @@ async function handleReviewResponse(response) {
             window.location.href = `place.html?id=${placeId}`;
         }
     } else {
-        const errorData = await response.json();
-        alert('Failed to submit review: ' + (errorData.error || 'Unknown error'));
+        try {
+            const errorData = await response.json();
+            // Check for different possible error message formats
+            const errorMessage = errorData.message || errorData.error || errorData.description || 'Unknown error';
+            alert('Failed to submit review: ' + errorMessage);
+        } catch (parseError) {
+            // Fallback if JSON parsing fails
+            alert('Failed to submit review: ' + response.statusText);
+        }
     }
 }
 
