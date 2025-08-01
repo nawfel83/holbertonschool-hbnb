@@ -16,7 +16,7 @@ def create_app(config_class=DevelopmentConfig):
     bcrypt.init_app(app)
     jwt.init_app(app)
     db.init_app(app)
-    CORS(app)
+    CORS(app, origins=["http://localhost:8000", "http://127.0.0.1:8000"])
     
     # Import models
     from app.models.user import User
