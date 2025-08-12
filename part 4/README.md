@@ -227,4 +227,4 @@ cd Frontend && python3 -m http.server 5500
 ```
 
 ## Authors :
-Yassine, Nawfel
+Nawfel
